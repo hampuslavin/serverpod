@@ -361,41 +361,113 @@ class LibraryGenerator {
   Library generateTestHelper() {
     var library = LibraryBuilder();
 
+    // Another non hard coded way to do this?
+    library.directives.addAll([
+      Directive.import('./endpoints.dart'),
+      Directive.import('./protocol.dart'),
+    ]);
+
+    library.body.add(Method((methodBuilder) {
+      methodBuilder
+        ..name = 'withServerpod'
+        ..annotations.add(refer('isTestGroup', serverpodTestUrl))
+        ..requiredParameters.addAll([
+          Parameter((p) => p
+            ..name = 'testGroupName'
+            ..type = refer('String')),
+          Parameter((p) => p
+            ..name = 'testClosure'
+            ..type = refer('TestClosure<TestEndpoints>', serverpodTestUrl)),
+        ])
+        ..body =
+            refer('buildWithServerpod<TestEndpoints>', serverpodTestUrl).call(
+          [
+            refer('TestServerpod', serverpodTestUrl).newInstance(
+              [],
+              {
+                'testEndpoints': refer('TestEndpoints').newInstance([]),
+                'endpoints': refer('Endpoints').newInstance([]),
+                'serializationManager': refer('Protocol').newInstance([]),
+              },
+            ),
+          ],
+        ).call([
+          refer('testGroupName'),
+          refer('testClosure'),
+        ]).statement;
+    }));
+
     // Endpoint class
     library.body.add(
       Class((classBuilder) {
         classBuilder
           ..name = 'TestEndpoints'
-          ..constructors.add(
-            Constructor(
-              (constructorBuilder) {
-                constructorBuilder.requiredParameters.addAll(
-                  [
-                    Parameter(
-                      (p) => p
-                        ..name = 'endpoints'
-                        ..type = refer('EndpointDispatch', serverpodUrl(true)),
-                    ),
-                    Parameter(
-                      (p) => p
-                        ..name = 'serializationManager'
-                        ..type =
-                            refer('SerializationManager', serverpodUrl(true)),
-                    ),
-                  ],
-                );
-                constructorBuilder.initializers.addAll([
-                  for (var endpoint in protocolDefinition.endpoints)
-                    refer(endpoint.name)
-                        .assign(refer(endpoint.className))
-                        .call([
-                      refer('endpoints'),
-                      refer('serializationManager')
-                    ]).code,
-                ]);
+          ..extend = refer('TestEndpointsBase', serverpodTestUrl)
+          ..fields.addAll([
+            Field(
+              (fieldBuilder) {
+                fieldBuilder
+                  ..name = 'endpoints'
+                  ..modifier = FieldModifier.final$
+                  ..type = refer('EndpointDispatch', serverpodUrl(true))
+                  ..late = true;
               },
             ),
-          );
+            Field(
+              (fieldBuilder) {
+                fieldBuilder
+                  ..name = 'serializationManager'
+                  ..modifier = FieldModifier.final$
+                  ..type = refer('SerializationManager', serverpodUrl(true))
+                  ..late = true;
+              },
+            ),
+          ])
+          ..methods.add(Method(
+            (methodBuilder) {
+              methodBuilder
+                ..name = 'initialize'
+                ..annotations.add(refer('override'))
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'serializationManager'
+                      ..type =
+                          refer('SerializationManager', serverpodUrl(true)),
+                  ),
+                )
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'endpoints'
+                      ..type = refer('EndpointDispatch', serverpodUrl(true)),
+                  ),
+                )
+                ..body = Block.of(
+                  [
+                    refer('this')
+                        .property('endpoints')
+                        .assign(refer('endpoints'))
+                        .statement,
+                    refer('this')
+                        .property('serializationManager')
+                        .assign(refer('serializationManager'))
+                        .statement,
+                    for (var endpoint in protocolDefinition.endpoints)
+                      refer(endpoint.name)
+                          .assign(
+                            refer(endpoint.className).newInstance(
+                              [
+                                refer('endpoints'),
+                                refer('serializationManager'),
+                              ],
+                            ),
+                          )
+                          .statement,
+                  ],
+                );
+            },
+          ));
 
         for (var endpoint in protocolDefinition.endpoints) {
           classBuilder.fields.add(
@@ -404,7 +476,8 @@ class LibraryGenerator {
                 fieldBuilder
                   ..name = endpoint.name
                   ..modifier = FieldModifier.final$
-                  ..type = refer(endpoint.className);
+                  ..type = refer(endpoint.className)
+                  ..late = true;
               },
             ),
           );
@@ -466,7 +539,7 @@ class LibraryGenerator {
                       Parameter(
                         (p) => p
                           ..name = 'session'
-                          ..type = refer('TestSession', serverpodUrl(true)),
+                          ..type = refer('TestSession', serverpodTestUrl),
                       ),
                       for (var parameter in method.parameters)
                         Parameter(

@@ -32,6 +32,7 @@ abstract class EndpointDispatch {
 
     // Find correct connector
     EndpointConnector? connector;
+    print(">>>>>>>>> $connectors");
 
     if (endpointComponents.length == 1) {
       // This is a standard server endpoint
