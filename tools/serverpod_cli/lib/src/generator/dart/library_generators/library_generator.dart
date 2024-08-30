@@ -358,6 +358,181 @@ class LibraryGenerator {
     return library.build();
   }
 
+  Library generateTestHelper() {
+    var library = LibraryBuilder();
+
+    // Endpoint class
+    library.body.add(
+      Class((classBuilder) {
+        classBuilder
+          ..name = 'TestEndpoints'
+          ..constructors.add(
+            Constructor(
+              (constructorBuilder) {
+                constructorBuilder.requiredParameters.addAll(
+                  [
+                    Parameter(
+                      (p) => p
+                        ..name = 'endpoints'
+                        ..type = refer('EndpointDispatch', serverpodUrl(true)),
+                    ),
+                    Parameter(
+                      (p) => p
+                        ..name = 'serializationManager'
+                        ..type =
+                            refer('SerializationManager', serverpodUrl(true)),
+                    ),
+                  ],
+                );
+                constructorBuilder.initializers.addAll([
+                  for (var endpoint in protocolDefinition.endpoints)
+                    refer(endpoint.name)
+                        .assign(refer(endpoint.className))
+                        .call([
+                      refer('endpoints'),
+                      refer('serializationManager')
+                    ]).code,
+                ]);
+              },
+            ),
+          );
+
+        for (var endpoint in protocolDefinition.endpoints) {
+          classBuilder.fields.add(
+            Field(
+              (fieldBuilder) {
+                fieldBuilder
+                  ..name = endpoint.name
+                  ..modifier = FieldModifier.final$
+                  ..type = refer(endpoint.className);
+              },
+            ),
+          );
+        }
+      }),
+    );
+
+    for (var endpoint in protocolDefinition.endpoints) {
+      library.body.add(Class((classBuilder) {
+        classBuilder
+          ..name = endpoint.className
+          ..fields.addAll([
+            Field(
+              (fieldBuilder) {
+                fieldBuilder
+                  ..name = '_endpointDispatch'
+                  ..modifier = FieldModifier.final$
+                  ..type = refer('EndpointDispatch', serverpodUrl(true));
+              },
+            ),
+            Field((fieldBuilder) {
+              fieldBuilder
+                ..name = '_serializationManager'
+                ..modifier = FieldModifier.final$
+                ..type = refer('SerializationManager', serverpodUrl(true));
+            })
+          ])
+          ..constructors.add(
+            Constructor(
+              (constructorBuilder) {
+                constructorBuilder.requiredParameters.addAll(
+                  [
+                    Parameter(
+                      (p) => p
+                        ..name = '_endpointDispatch'
+                        ..toThis = true,
+                    ),
+                    Parameter(
+                      (p) => p
+                        ..name = '_serializationManager'
+                        ..toThis = true,
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+
+        for (var method in endpoint.methods) {
+          classBuilder.methods.add(
+            Method(
+              (methodBuilder) {
+                methodBuilder
+                  ..name = method.name
+                  ..modifier = MethodModifier.async
+                  ..returns = method.returnType.reference(false, config: config)
+                  ..requiredParameters.addAll(
+                    [
+                      Parameter(
+                        (p) => p
+                          ..name = 'session'
+                          ..type = refer('TestSession', serverpodUrl(true)),
+                      ),
+                      for (var parameter in method.parameters)
+                        Parameter(
+                          (p) => p
+                            ..name = parameter.name
+                            ..type =
+                                parameter.type.reference(false, config: config),
+                        ),
+                    ],
+                  );
+
+                methodBuilder.body = Block.of([
+                  Code('try {'),
+                  refer('var callContext')
+                      .assign(refer('_endpointDispatch')
+                          .awaited
+                          .property('getMethodCallContext')
+                          .call([], {
+                        'createSessionCallback': Method((methodBuilder) =>
+                                methodBuilder
+                                  ..requiredParameters.add(
+                                    Parameter((p) => p..name = '_'),
+                                  )
+                                  ..body =
+                                      refer('session').property('session').code)
+                            .closure,
+                        'endpointPath': literalString(endpoint.name),
+                        'methodName': literalString(method.name),
+                        'parameters': literalMap({
+                          for (var parameter in method.parameters)
+                            literalString(parameter.name):
+                                refer(parameter.name).code,
+                        }),
+                        'serializationManager': refer('_serializationManager'),
+                      }))
+                      .statement,
+                  refer('callContext')
+                      .property('method')
+                      .property('call')
+                      .call([
+                        refer('session').property('session'),
+                        refer('callContext').property('arguments'),
+                      ])
+                      .asA(method.returnType.reference(false, config: config))
+                      .awaited
+                      .returned
+                      .statement,
+                  Code('} on'),
+                  refer('NotAuthorizedException', serverpodUrl(true)).code,
+                  Code('''{
+      // TODO(hampusl): This should be a proper exception, perhaps a specific test exception
+      throw Exception("Not authorized.");
+    } catch (e) {
+      throw StateError("Invalid test state.");
+    }'''),
+                ]);
+              },
+            ),
+          );
+        }
+      }));
+    }
+
+    return library.build();
+  }
+
   /// Generates endpoint calls for the client side.
   /// Executing this only makes sens for the client code
   /// (if [serverCode] is `false`).

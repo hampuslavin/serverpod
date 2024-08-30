@@ -46,6 +46,10 @@ class DartServerCodeGenerator extends CodeGenerator {
           serverClassGenerator.generateProtocol().generateCode(),
       p.joinAll([...config.generatedServeModelPathParts, 'endpoints.dart']):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
+      p.joinAll([
+        ...config.generatedServeModelPathParts,
+        'serverpod_test_helper.dart'
+      ]): serverClassGenerator.generateTestHelper().generateCode(),
     };
   }
 }
