@@ -41,15 +41,31 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
+    var relativeServerTestToolsPathParts =
+        config.relativeServerTestToolsPathParts;
+    var protocolPackageImportPath = 'package:${config.name}_server/${p.joinAll([
+          ...config.generatedServeModelPathParts.sublist(1),
+          'protocol.dart'
+        ])}';
+    var endpointsPackageImportPath =
+        'package:${config.name}_server/${p.joinAll([
+          ...config.generatedServeModelPathParts.sublist(1),
+          'endpoints.dart'
+        ])}';
+
     return {
       p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
           serverClassGenerator.generateProtocol().generateCode(),
       p.joinAll([...config.generatedServeModelPathParts, 'endpoints.dart']):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
-      p.joinAll([
-        ...config.generatedServeModelPathParts,
-        'serverpod_test_helper.dart'
-      ]): serverClassGenerator.generateTestHelper().generateCode(),
+      if (relativeServerTestToolsPathParts != null)
+        p.joinAll([
+          ...relativeServerTestToolsPathParts,
+          'serverpod_test_tools.dart'
+        ]): serverClassGenerator
+            .generateTestHelper(
+                protocolPackageImportPath, endpointsPackageImportPath)
+            .generateCode(),
     };
   }
 }

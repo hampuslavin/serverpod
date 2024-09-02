@@ -53,30 +53,27 @@ class TestServerpod<T extends TestEndpointsBase> {
   }
 }
 
-// This would be a modified version of the actual user endpoint
-class ExampleEndpoint {
-  EndpointDispatch _endpointDispatch;
-  SerializationManager _serializationManager;
-  ExampleEndpoint(this._endpointDispatch, this._serializationManager);
-
-  Future<String> hello(TestSession session, String name) async {
-    try {
-      var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => session.session,
-        endpointPath: 'example',
-        methodName: 'hello',
-        parameters: {'name': name},
-        serializationManager: _serializationManager,
-      );
-
-      return (await callContext.method
-          .call(session.session, callContext.arguments)) as String;
-    } on NotAuthorizedException {
-      // TODO(hampusl): This should be a proper exception, perhaps a specific test exception
-      throw Exception("Not authorized.");
-    } catch (e) {
-      throw StateError("Invalid test state.");
-    }
+Future<T> callEndpointMethodAndHandleExceptions<T>(
+  Future<T> Function() call,
+) async {
+  try {
+    return call();
+  } on NotAuthorizedException catch (e) {
+    print('Not authorized: $e');
+    // TODO(hampusl): Should we throw a different exception here?
+    throw Exception("Not authorized.");
+  } on MethodNotFoundException catch (e) {
+    throw StateError("Invalid test state: $e");
+  } on EndpointNotFoundException catch (e) {
+    throw StateError("Invalid test state: $e");
+  } on InvalidParametersException catch (e) {
+    throw StateError("Invalid test state: $e");
+  } on InvalidEndpointMethodTypeException catch (e) {
+    throw StateError("Invalid test state: $e");
+  } on Exception catch (e) {
+    throw StateError("Invalid test state: $e");
+  } catch (e) {
+    throw StateError("Invalid test state: $e");
   }
 }
 
@@ -96,10 +93,7 @@ Function(String, TestClosure<T>)
     group(testGroupName, () {
       TestSession testSession = TestSession();
       setUpAll(() async {
-        print(">>>>>>>>Starting serverpod");
-        // could create serverpod outside TestServerpod so that we don't have to expose create session and so on
         await testServerpod.start();
-        print(">>>>>>>>Serverpod started");
         var session = await testServerpod.createSession();
         testSession.setSession(session);
       });

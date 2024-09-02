@@ -358,13 +358,12 @@ class LibraryGenerator {
     return library.build();
   }
 
-  Library generateTestHelper() {
+  Library generateTestHelper(String protocolPath, String endpointsPath) {
     var library = LibraryBuilder();
 
-    // Another non hard coded way to do this?
     library.directives.addAll([
-      Directive.import('./endpoints.dart'),
-      Directive.import('./protocol.dart'),
+      Directive.import(protocolPath),
+      Directive.import(endpointsPath),
     ]);
 
     library.body.add(Method((methodBuilder) {
@@ -403,26 +402,6 @@ class LibraryGenerator {
         classBuilder
           ..name = 'TestEndpoints'
           ..extend = refer('TestEndpointsBase', serverpodTestUrl)
-          ..fields.addAll([
-            Field(
-              (fieldBuilder) {
-                fieldBuilder
-                  ..name = 'endpoints'
-                  ..modifier = FieldModifier.final$
-                  ..type = refer('EndpointDispatch', serverpodUrl(true))
-                  ..late = true;
-              },
-            ),
-            Field(
-              (fieldBuilder) {
-                fieldBuilder
-                  ..name = 'serializationManager'
-                  ..modifier = FieldModifier.final$
-                  ..type = refer('SerializationManager', serverpodUrl(true))
-                  ..late = true;
-              },
-            ),
-          ])
           ..methods.add(Method(
             (methodBuilder) {
               methodBuilder
@@ -445,14 +424,6 @@ class LibraryGenerator {
                 )
                 ..body = Block.of(
                   [
-                    refer('this')
-                        .property('endpoints')
-                        .assign(refer('endpoints'))
-                        .statement,
-                    refer('this')
-                        .property('serializationManager')
-                        .assign(refer('serializationManager'))
-                        .statement,
                     for (var endpoint in protocolDefinition.endpoints)
                       refer(endpoint.name)
                           .assign(
@@ -551,8 +522,7 @@ class LibraryGenerator {
                     ],
                   );
 
-                methodBuilder.body = Block.of([
-                  Code('try {'),
+                var callBody = Block.of([
                   refer('var callContext')
                       .assign(refer('_endpointDispatch')
                           .awaited
@@ -584,18 +554,23 @@ class LibraryGenerator {
                         refer('callContext').property('arguments'),
                       ])
                       .asA(method.returnType.reference(false, config: config))
-                      .awaited
                       .returned
                       .statement,
-                  Code('} on'),
-                  refer('NotAuthorizedException', serverpodUrl(true)).code,
-                  Code('''{
-      // TODO(hampusl): This should be a proper exception, perhaps a specific test exception
-      throw Exception("Not authorized.");
-    } catch (e) {
-      throw StateError("Invalid test state.");
-    }'''),
                 ]);
+
+                methodBuilder.body = refer(
+                        'callEndpointMethodAndHandleExceptions',
+                        serverpodTestUrl)
+                    .call([
+                      Method(
+                        (methodBuilder) => methodBuilder
+                          ..modifier = MethodModifier.async
+                          ..body = callBody
+                          ..returns,
+                      ).closure
+                    ])
+                    .returned
+                    .statement;
               },
             ),
           );

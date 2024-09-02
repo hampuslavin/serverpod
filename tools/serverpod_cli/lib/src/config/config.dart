@@ -54,12 +54,14 @@ class GeneratorConfig {
     required this.dartClientPackage,
     required this.dartClientDependsOnServiceClient,
     required this.serverPackageDirectoryPathParts,
+    required relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,
     required this.enabledFeatures,
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
+        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
         _modules = modules;
 
   /// The name of the serverpod project.
@@ -122,6 +124,18 @@ class GeneratorConfig {
         ...serverPackageDirectoryPathParts,
         ..._relativeDartClientPackagePathParts
       ];
+
+  final List<String>? _relativeServerTestToolsPathParts;
+  List<String>? get relativeServerTestToolsPathParts {
+    var localRelativeServerTestToolsPathParts =
+        _relativeServerTestToolsPathParts;
+    if (localRelativeServerTestToolsPathParts == null) return null;
+
+    return [
+      ...serverPackageDirectoryPathParts,
+      ...localRelativeServerTestToolsPathParts
+    ];
+  }
 
   /// The path parts to the protocol directory in the dart client package.
   List<String> get generatedDartClientModelPathParts =>
@@ -195,6 +209,12 @@ class GeneratorConfig {
           p.split(generatorConfig['client_package_path']);
     }
 
+    List<String>? relativeServerTestToolsPathParts;
+    if (generatorConfig['server_test_tools_folder_path'] != null) {
+      relativeServerTestToolsPathParts =
+          p.split(generatorConfig['server_test_tools_folder_path']);
+    }
+
     late String dartClientPackage;
     late bool dartClientDependsOnServiceClient;
 
@@ -222,6 +242,16 @@ class GeneratorConfig {
       throw const ServerpodProjectNotFoundException(
         'Failed to read your server\'s package configuration. Have you run '
         '`dart pub get` in your server directory?',
+      );
+    }
+
+    if (relativeServerTestToolsPathParts != null &&
+        packageConfig['serverpod_test'] == null) {
+      log.warning(
+        "A `server_test_tools_folder_path` was set in the generator config, "
+        "but the `serverpod_test` package is not installed. "
+        "Make sure it's part of your pubspec.yaml file and run `dart pub get`. "
+        "If you don't want to use `serverpod_test`, then remove `server_test_tools_folder_path`.",
       );
     }
 
@@ -282,6 +312,7 @@ class GeneratorConfig {
       dartClientPackage: dartClientPackage,
       dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
