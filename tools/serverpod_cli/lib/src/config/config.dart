@@ -111,10 +111,17 @@ class GeneratorConfig {
   List<String> get endpointsSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
 
+  /// The internal package path parts of the directory, where the generated code is stored in the
+  /// server package.
+  List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
+
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
-  List<String> get generatedServeModelPathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
+  List<String> get generatedServeModelPathParts => [
+        ...serverPackageDirectoryPathParts,
+        'lib',
+        ...generatedServeModelPackagePathParts
+      ];
 
   /// Path parts from the server package to the dart client package.
   final List<String> _relativeDartClientPackagePathParts;
@@ -126,7 +133,7 @@ class GeneratorConfig {
       ];
 
   final List<String>? _relativeServerTestToolsPathParts;
-  List<String>? get relativeServerTestToolsPathParts {
+  List<String>? get generatedServerTestToolsPathParts {
     var localRelativeServerTestToolsPathParts =
         _relativeServerTestToolsPathParts;
     if (localRelativeServerTestToolsPathParts == null) return null;
