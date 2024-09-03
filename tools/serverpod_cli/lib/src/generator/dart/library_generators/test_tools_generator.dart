@@ -4,6 +4,8 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
+import '../../keywords.dart';
+
 class TestToolsGenerator {
   final ProtocolDefinition protocolDefinition;
   final GeneratorConfig config;
@@ -16,7 +18,7 @@ class TestToolsGenerator {
   Library generateTestHelper() {
     var library = LibraryBuilder();
 
-    _addPackageImports(library);
+    _addPackageDirectives(library);
 
     library.body.addAll(
       [
@@ -86,9 +88,12 @@ class TestToolsGenerator {
       MethodDefinition method, EndpointDefinition endpoint) {
     return Method(
       (methodBuilder) {
+        bool isStream = method.returnType.dartType?.isDartAsyncStream ?? false;
+
         methodBuilder
           ..name = method.name
-          ..modifier = MethodModifier.async
+          ..returns = method.returnType.reference(true, config: config)
+          ..modifier = isStream ? null : MethodModifier.async
           ..requiredParameters.addAll(
             [
               Parameter(
@@ -105,54 +110,114 @@ class TestToolsGenerator {
             ],
           );
 
-        var endpointCallClosure = Method(
-          (methodBuilder) => methodBuilder
-            ..modifier = MethodModifier.async
-            ..body = Block.of([
-              refer('var callContext')
-                  .assign(refer('_endpointDispatch')
-                      .awaited
-                      .property('getMethodCallContext')
-                      .call([], {
-                    'createSessionCallback': Method((methodBuilder) =>
-                            methodBuilder
-                              ..requiredParameters.add(
-                                Parameter((p) => p..name = '_'),
-                              )
-                              ..body =
-                                  refer('session').property('session').code)
-                        .closure,
-                    'endpointPath': literalString(endpoint.name),
-                    'methodName': literalString(method.name),
-                    'parameters': literalMap({
-                      for (var parameter in method.parameters)
-                        literalString(parameter.name):
-                            refer(parameter.name).code,
-                    }),
-                    'serializationManager': refer('_serializationManager'),
-                  }))
-                  .statement,
-              refer('callContext')
+        methodBuilder.body = isStream
+            ? _buildEndpointStreamMethodCall(endpoint, method)
+            : _buildEndpointMethodCall(endpoint, method);
+      },
+    );
+  }
+
+  Code _buildEndpointMethodCall(
+      EndpointDefinition endpoint, MethodDefinition method) {
+    var closure = Method(
+      (methodBuilder) => methodBuilder
+        ..modifier = MethodModifier.async
+        ..body = Block.of([
+          refer('var callContext')
+              .assign(refer('_endpointDispatch')
+                  .awaited
+                  .property('getMethodCallContext')
+                  .call([], {
+                'createSessionCallback': Method((methodBuilder) => methodBuilder
+                  ..requiredParameters.add(
+                    Parameter((p) => p..name = '_'),
+                  )
+                  ..body = refer('session')
+                      .asA(refer('InternalTestSession', serverpodTestUrl))
+                      .property('serverpodSession')
+                      .code).closure,
+                'endpointPath': literalString(endpoint.name),
+                'methodName': literalString(method.name),
+                'parameters': literalMap({
+                  for (var parameter in method.parameters)
+                    literalString(parameter.name): refer(parameter.name).code,
+                }),
+                'serializationManager': refer('_serializationManager'),
+              }))
+              .statement,
+          refer('callContext')
+              .property('method')
+              .property('call')
+              .call([
+                refer('session')
+                    .asA(refer('InternalTestSession', serverpodTestUrl))
+                    .property('serverpodSession'),
+                refer('callContext').property('arguments'),
+              ])
+              .asA(method.returnType.reference(true, config: config))
+              .returned
+              .statement,
+        ])
+        ..returns,
+    ).closure;
+
+    return refer('callEndpointMethodAndHandleExceptions', serverpodTestUrl)
+        .call([closure])
+        .returned
+        .statement;
+  }
+
+  Code _buildEndpointStreamMethodCall(
+      EndpointDefinition endpoint, MethodDefinition method) {
+    var closure = Method(
+      (methodBuilder) => methodBuilder
+        ..modifier = MethodModifier.asyncStar
+        ..body = Block.of([
+          refer('var callContext')
+              .assign(refer('_endpointDispatch')
+                  .awaited
+                  .property('getMethodStreamCallContext')
+                  .call([], {
+                'createSessionCallback': Method((methodBuilder) => methodBuilder
+                  ..requiredParameters.add(
+                    Parameter((p) => p..name = '_'),
+                  )
+                  ..body = refer('session')
+                      .asA(refer('InternalTestSession', serverpodTestUrl))
+                      .property('serverpodSession')
+                      .code).closure,
+                'endpointPath': literalString(endpoint.name),
+                'methodName': literalString(method.name),
+                'arguments': literalMap({
+                  for (var parameter in method.parameters)
+                    literalString(parameter.name): refer(parameter.name).code,
+                }),
+                "requestedInputStreams": literalList([]),
+                'serializationManager': refer('_serializationManager'),
+              }))
+              .statement,
+          refer('var result')
+              .assign(refer('callContext')
                   .property('method')
                   .property('call')
                   .call([
-                    refer('session').property('session'),
-                    refer('callContext').property('arguments'),
-                  ])
-                  .asA(method.returnType.reference(true, config: config))
-                  .returned
-                  .statement,
-            ])
-            ..returns,
-        ).closure;
+                refer('session')
+                    .asA(refer('InternalTestSession', serverpodTestUrl))
+                    .property('serverpodSession'),
+                refer('callContext').property('arguments'),
+                literalMap({}),
+              ]).asA(method.returnType.reference(true, config: config)))
+              .statement,
+          Code('await for (var item in result) {yield item;}'),
+        ])
+        ..returns,
+    ).closure;
 
-        methodBuilder.body =
-            refer('callEndpointMethodAndHandleExceptions', serverpodTestUrl)
-                .call([endpointCallClosure])
-                .returned
-                .statement;
-      },
-    );
+    return refer(
+            'callEndpointStreamMethodAndHandleExceptions', serverpodTestUrl)
+        .call([closure])
+        .returned
+        .statement;
   }
 
   Class _buildTestEndpointsClass() {
@@ -245,7 +310,7 @@ class TestToolsGenerator {
     });
   }
 
-  void _addPackageImports(LibraryBuilder library) {
+  void _addPackageDirectives(LibraryBuilder library) {
     var protocolPackageImportPath = 'package:${config.name}_server/${p.joinAll([
           ...config.generatedServeModelPackagePathParts,
           'protocol.dart'
@@ -258,6 +323,7 @@ class TestToolsGenerator {
     library.directives.addAll([
       Directive.import(protocolPackageImportPath),
       Directive.import(endpointsPath),
+      Directive.export(serverpodTestUrl, show: ['TestSession']),
     ]);
   }
 }

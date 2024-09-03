@@ -42,7 +42,7 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var codeMap = {
+    var generatedFiles = {
       p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
           serverClassGenerator.generateProtocol().generateCode(),
       p.joinAll([...config.generatedServeModelPathParts, 'endpoints.dart']):
@@ -57,7 +57,7 @@ class DartServerCodeGenerator extends CodeGenerator {
         config: config,
       );
 
-      codeMap.addAll({
+      generatedFiles.addAll({
         p.joinAll([
           ...generatedServerTestToolsPathParts,
           'serverpod_test_tools.dart'
@@ -65,6 +65,6 @@ class DartServerCodeGenerator extends CodeGenerator {
       });
     }
 
-    return codeMap;
+    return generatedFiles;
   }
 }
