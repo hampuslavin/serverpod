@@ -85,6 +85,16 @@ class TestServerpod<T extends TestEndpointsBase> {
   }
 }
 
+/// The user was not authenticated.
+class UnauthenticatedEndpointCallTestException implements Exception {
+  UnauthenticatedEndpointCallTestException();
+}
+
+/// The authentication key provided did not have sufficient access.
+class InsufficientEndpointAccessTestException implements Exception {
+  InsufficientEndpointAccessTestException();
+}
+
 Future<T> callEndpointMethodAndHandleExceptions<T>(
   Future<T> Function() call,
 ) async {
@@ -109,18 +119,25 @@ Stream<T> callEndpointStreamMethodAndHandleExceptions<T>(
 }
 
 dynamic _getException(dynamic e) {
+  var unexpectedError = StateError(
+      'An unexpected error occured while trying to call the endpoint in the test. '
+      'Make sure you have run `serverpod generate`.');
+
   if (e is NotAuthorizedException) {
-    // Two new test exceptions: InsufficientAccess, NotAuthenticated
-    return Exception("Not authorized.");
+    return switch (e.authenticationFailedResult.reason) {
+      AuthenticationFailureReason.unauthenticated =>
+        UnauthenticatedEndpointCallTestException(),
+      AuthenticationFailureReason.insufficientAccess =>
+        InsufficientEndpointAccessTestException(),
+    };
   } else if (e is MethodNotFoundException) {
-    // provide hint on "impossible" states to regenerate
-    return StateError("Invalid test state: $e");
+    return unexpectedError;
   } else if (e is EndpointNotFoundException) {
-    return StateError("Invalid test state: $e");
+    return unexpectedError;
   } else if (e is InvalidParametersException) {
-    return StateError("Invalid test state: $e");
+    return unexpectedError;
   } else if (e is InvalidEndpointMethodTypeException) {
-    return StateError("Invalid test state: $e");
+    return unexpectedError;
   } else {
     return e;
   }
@@ -133,8 +150,9 @@ typedef TestClosure<T> = void Function(
 
 Function(String, TestClosure<T>)
     buildWithServerpod<T extends TestEndpointsBase>(
-  TestServerpod<T> testServerpod,
-) {
+  TestServerpod<T> testServerpod, {
+  resetSessionBetweenTests = false,
+}) {
   return (
     String testGroupName,
     TestClosure<T> testClosure,
@@ -153,13 +171,11 @@ Function(String, TestClosure<T>)
         await testSession.destroy();
       });
 
-      // tearDown(() async {
-      //   await testSession.destroy();
-      //   testSession = InternalTestSession();
-      //   var serverpodSession = await testServerpod.createSession();
-      //   testSession.setServerpodSession(serverpodSession);
-      // });
-
+      if (resetSessionBetweenTests) {
+        tearDown(() async {
+          testSession = await testSession.copyWith() as InternalTestSession;
+        });
+      }
       testClosure(testServerpod.testEndpoints, testSession);
     });
   };

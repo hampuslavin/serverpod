@@ -332,7 +332,11 @@ class TestToolsGenerator {
     library.directives.addAll([
       Directive.import(protocolPackageImportPath),
       Directive.import(endpointsPath),
-      Directive.export(serverpodTestUrl, show: ['TestSession']),
+      Directive.export(serverpodTestUrl, show: [
+        'TestSession',
+        'UnauthenticatedEndpointCallTestException',
+        'InsufficientEndpointAccessTestException'
+      ]),
     ]);
   }
 }
