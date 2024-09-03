@@ -90,44 +90,39 @@ Future<T> callEndpointMethodAndHandleExceptions<T>(
 ) async {
   try {
     return await call();
-  } on NotAuthorizedException catch (_) {
-    // TODO(hampusl): Should we throw a different exception here?
-    // Two new test exceptions: InsufficientAccess, NotAuthenticated
-    throw Exception("Not authorized.");
-  } on MethodNotFoundException catch (e) {
-    // provide hint on "impossible" states to regenerate
-    throw StateError("Invalid test state: $e");
-  } on EndpointNotFoundException catch (e) {
-    throw StateError("Invalid test state: $e");
-  } on InvalidParametersException catch (e) {
-    throw StateError("Invalid test state: $e");
-  } on InvalidEndpointMethodTypeException catch (e) {
-    throw StateError("Invalid test state: $e");
-  } catch (_) {
-    rethrow;
+  } catch (e) {
+    throw _getException(e);
   }
 }
 
 Stream<T> callEndpointStreamMethodAndHandleExceptions<T>(
-  Stream<T> Function() call,
-) {
+  Future<Stream<T>> Function() call,
+) async* {
   try {
-    return call();
-  } on NotAuthorizedException catch (e) {
-    // TODO(hampusl): Should we throw a different exception here?
+    var result = await call();
+    await for (var item in result) {
+      yield item;
+    }
+  } catch (e) {
+    throw _getException(e);
+  }
+}
+
+dynamic _getException(dynamic e) {
+  if (e is NotAuthorizedException) {
     // Two new test exceptions: InsufficientAccess, NotAuthenticated
-    throw Exception("Not authorized.");
-  } on MethodNotFoundException catch (e) {
+    return Exception("Not authorized.");
+  } else if (e is MethodNotFoundException) {
     // provide hint on "impossible" states to regenerate
-    throw StateError("Invalid test state: $e");
-  } on EndpointNotFoundException catch (e) {
-    throw StateError("Invalid test state: $e");
-  } on InvalidParametersException catch (e) {
-    throw StateError("Invalid test state: $e");
-  } on InvalidEndpointMethodTypeException catch (e) {
-    throw StateError("Invalid test state: $e");
-  } catch (_) {
-    rethrow;
+    return StateError("Invalid test state: $e");
+  } else if (e is EndpointNotFoundException) {
+    return StateError("Invalid test state: $e");
+  } else if (e is InvalidParametersException) {
+    return StateError("Invalid test state: $e");
+  } else if (e is InvalidEndpointMethodTypeException) {
+    return StateError("Invalid test state: $e");
+  } else {
+    return e;
   }
 }
 

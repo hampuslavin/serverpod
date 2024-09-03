@@ -169,9 +169,14 @@ class TestToolsGenerator {
 
   Code _buildEndpointStreamMethodCall(
       EndpointDefinition endpoint, MethodDefinition method) {
+    var parameters =
+        method.parameters.where((p) => !p.type.isStreamType).toList();
+    var streamParameters =
+        method.parameters.where((p) => p.type.isStreamType).toList();
+
     var closure = Method(
       (methodBuilder) => methodBuilder
-        ..modifier = MethodModifier.asyncStar
+        ..modifier = MethodModifier.async
         ..body = Block.of([
           refer('var callContext')
               .assign(refer('_endpointDispatch')
@@ -189,26 +194,30 @@ class TestToolsGenerator {
                 'endpointPath': literalString(endpoint.name),
                 'methodName': literalString(method.name),
                 'arguments': literalMap({
-                  for (var parameter in method.parameters)
+                  for (var parameter in parameters)
                     literalString(parameter.name): refer(parameter.name).code,
                 }),
-                "requestedInputStreams": literalList([]),
+                "requestedInputStreams":
+                    literalList(streamParameters.map((p) => p.name)),
                 'serializationManager': refer('_serializationManager'),
               }))
               .statement,
-          refer('var result')
-              .assign(refer('callContext')
-                  .property('method')
-                  .property('call')
-                  .call([
+          refer('callContext')
+              .property('method')
+              .property('call')
+              .call([
                 refer('session')
                     .asA(refer('InternalTestSession', serverpodTestUrl))
                     .property('serverpodSession'),
                 refer('callContext').property('arguments'),
-                literalMap({}),
-              ]).asA(method.returnType.reference(true, config: config)))
+                literalMap({
+                  for (var parameter in streamParameters)
+                    literalString(parameter.name): refer(parameter.name),
+                }),
+              ])
+              .asA(method.returnType.reference(true, config: config))
+              .returned
               .statement,
-          Code('await for (var item in result) {yield item;}'),
         ])
         ..returns,
     ).closure;
