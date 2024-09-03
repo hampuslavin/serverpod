@@ -64,7 +64,7 @@ class TestServerpod<T extends TestEndpointsBase> {
     required SerializationManagerServer serializationManager,
     required EndpointDispatch endpoints,
   }) : _serverpod = Serverpod(
-          ['-m', ServerpodRunMode.development],
+          ['-m', ServerpodRunMode.test],
           serializationManager,
           endpoints,
         ) {

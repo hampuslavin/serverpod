@@ -13,6 +13,11 @@ import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:deletable_server/src/generated/protocol.dart';
 import 'package:deletable_server/src/generated/endpoints.dart';
+export 'package:serverpod_test/serverpod_test.dart'
+    show
+        TestSession,
+        UnauthenticatedEndpointCallTestException,
+        InsufficientEndpointAccessTestException;
 
 @_i1.isTestGroup
 withServerpod(
@@ -30,10 +35,6 @@ withServerpod(
 }
 
 class TestEndpoints extends _i1.TestEndpointsBase {
-  late final _i2.EndpointDispatch endpoints;
-
-  late final _i2.SerializationManager serializationManager;
-
   late final ExampleEndpoint example;
 
   @override
@@ -41,8 +42,6 @@ class TestEndpoints extends _i1.TestEndpointsBase {
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
-    this.endpoints = endpoints;
-    this.serializationManager = serializationManager;
     example = ExampleEndpoint(
       endpoints,
       serializationManager,
@@ -64,22 +63,19 @@ class ExampleEndpoint {
     _i1.TestSession session,
     String name,
   ) async {
-    try {
+    return _i1.callEndpointMethodAndHandleExceptions(() async {
       var callContext = await _endpointDispatch.getMethodCallContext(
-        createSessionCallback: (_) => session.session,
+        createSessionCallback: (_) =>
+            (session as _i1.InternalTestSession).serverpodSession,
         endpointPath: 'example',
         methodName: 'hello',
         parameters: {'name': name},
         serializationManager: _serializationManager,
       );
-      return await (callContext.method.call(
-        session.session,
+      return (callContext.method.call(
+        (session as _i1.InternalTestSession).serverpodSession,
         callContext.arguments,
       ) as _i3.Future<String>);
-    } on _i2.NotAuthorizedException {
-      throw Exception("Not authorized.");
-    } catch (e) {
-      throw StateError("Invalid test state.");
-    }
+    });
   }
 }
