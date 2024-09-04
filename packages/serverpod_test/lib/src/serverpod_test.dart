@@ -1,20 +1,42 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/database.dart';
 import 'package:test/test.dart';
 
 export 'package:meta/meta.dart' show isTestGroup;
 
-abstract class TestSession {
-  TestSession();
+abstract class TestSession implements DatabaseAccessor {
+  AuthenticationInfo? get authenticationInfo;
 
   Future<TestSession> copyWith({
-    AuthenticationInfo? authenticationInfo,
+    AuthenticationInfo? Function()? getAuthenticationInfo,
   });
 }
 
+class _TestSessionManager {
+  static Map<int, InternalTestSession> _sessions = {};
+
+  static int _sessionIdCounter = 0;
+
+  static int add(InternalTestSession session) {
+    _sessionIdCounter++;
+    _sessions.putIfAbsent(_sessionIdCounter, () => session);
+    return _sessionIdCounter;
+  }
+
+  static removeSession(int sessionId) {
+    assert(_sessions.remove(sessionId) != null);
+  }
+}
+
 class InternalTestSession extends TestSession {
-  InternalTestSession(TestServerpod testServerpod, {authenticationInfo})
+  InternalTestSession(TestServerpod testServerpod,
+      {AuthenticationInfo? authenticationInfo,
+      required bool resetStateBetweenTests})
       : _authenticationInfo = authenticationInfo,
-        _testServerpod = testServerpod;
+        _testServerpod = testServerpod,
+        _resetStateBetweenTests = resetStateBetweenTests {
+    _sessionId = _TestSessionManager.add(this);
+  }
 
   final TestServerpod _testServerpod;
 
@@ -22,17 +44,25 @@ class InternalTestSession extends TestSession {
 
   AuthenticationInfo? _authenticationInfo;
 
+  late int _sessionId;
+
+  final bool _resetStateBetweenTests;
+
   void setAndConfigureServerpodSession(Session session) {
     serverpodSession = session;
     serverpodSession.updateAuthenticated(_authenticationInfo);
   }
 
   @override
-  Future<TestSession> copyWith({AuthenticationInfo? authenticationInfo}) async {
-    await serverpodSession.close();
-
-    var newSession = InternalTestSession(_testServerpod,
-        authenticationInfo: authenticationInfo ?? _authenticationInfo);
+  Future<TestSession> copyWith(
+      {AuthenticationInfo? Function()? getAuthenticationInfo}) async {
+    var newSession = InternalTestSession(
+      _testServerpod,
+      authenticationInfo: getAuthenticationInfo != null
+          ? getAuthenticationInfo()
+          : _authenticationInfo,
+      resetStateBetweenTests: _resetStateBetweenTests,
+    );
 
     var newServerpodSession = await _testServerpod.createSession();
 
@@ -41,11 +71,26 @@ class InternalTestSession extends TestSession {
     return newSession;
   }
 
+  Future<void> resetState() async {
+    await serverpodSession.close();
+    _authenticationInfo = null;
+    var newServerpodSession = await _testServerpod.createSession();
+    setAndConfigureServerpodSession(newServerpodSession);
+  }
+
   Future<void> destroy() async {
     await serverpodSession.close();
+    _TestSessionManager.removeSession(_sessionId);
   }
+
+  @override
+  Database get db => serverpodSession.db;
+
+  @override
+  AuthenticationInfo? get authenticationInfo => _authenticationInfo;
 }
 
+// TODO(hampusl): Rename class
 abstract class TestEndpointsBase {
   // TODO(hampusl): Hide this in public API
   initialize(
@@ -64,7 +109,8 @@ class TestServerpod<T extends TestEndpointsBase> {
     required SerializationManagerServer serializationManager,
     required EndpointDispatch endpoints,
   }) : _serverpod = Serverpod(
-          ['-m', ServerpodRunMode.test],
+          // TODO(hampusl): Fix so that .test run mode is working
+          ['-m', ServerpodRunMode.development],
           serializationManager,
           endpoints,
         ) {
@@ -151,14 +197,16 @@ typedef TestClosure<T> = void Function(
 Function(String, TestClosure<T>)
     buildWithServerpod<T extends TestEndpointsBase>(
   TestServerpod<T> testServerpod, {
-  resetStateBetweenTests = true,
+  bool? resetStateBetweenTests = true,
 }) {
+  var _resetStateBetweenTests = resetStateBetweenTests ?? true;
   return (
     String testGroupName,
     TestClosure<T> testClosure,
   ) {
     group(testGroupName, () {
-      InternalTestSession testSession = InternalTestSession(testServerpod);
+      InternalTestSession testSession = InternalTestSession(testServerpod,
+          resetStateBetweenTests: _resetStateBetweenTests);
 
       setUpAll(() async {
         await testServerpod.start();
@@ -168,14 +216,18 @@ Function(String, TestClosure<T>)
 
       tearDownAll(() async {
         await testServerpod.shutdown();
-        await testSession.destroy();
+        for (var session in _TestSessionManager._sessions.values) {
+          await session.destroy();
+        }
       });
 
-      if (resetStateBetweenTests) {
-        tearDown(() async {
-          testSession = await testSession.copyWith() as InternalTestSession;
-        });
-      }
+      tearDown(() async {
+        if (_resetStateBetweenTests) {
+          for (var session in _TestSessionManager._sessions.values) {
+            await session.resetState();
+          }
+        }
+      });
       testClosure(testServerpod.testEndpoints, testSession);
     });
   };

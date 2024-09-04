@@ -13,6 +13,7 @@ const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
+// TODO(hampusl): add test for withServerpod
 void main() {
   var expectedFileName = path.join(
     'integration_test',

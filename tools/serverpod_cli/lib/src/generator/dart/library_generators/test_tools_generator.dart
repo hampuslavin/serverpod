@@ -309,6 +309,12 @@ class TestToolsGenerator {
             ..name = 'testClosure'
             ..type = refer('TestClosure<TestEndpoints>', serverpodTestUrl)),
         ])
+        ..optionalParameters.addAll([
+          Parameter((p) => p
+            ..name = 'resetStateBetweenTests'
+            ..named = true
+            ..type = refer('bool?')),
+        ])
         ..body =
             refer('buildWithServerpod<TestEndpoints>', serverpodTestUrl).call(
           [
@@ -321,6 +327,9 @@ class TestToolsGenerator {
               },
             ),
           ],
+          {
+            'resetStateBetweenTests': refer('resetStateBetweenTests'),
+          },
         ).call([
           refer('testGroupName'),
           refer('testClosure'),
