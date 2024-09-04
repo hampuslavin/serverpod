@@ -95,7 +95,7 @@ class InsufficientEndpointAccessTestException implements Exception {
   InsufficientEndpointAccessTestException();
 }
 
-Future<T> callEndpointMethodAndHandleExceptions<T>(
+Future<T> callAwaitableFunctionAndHandleExceptions<T>(
   Future<T> Function() call,
 ) async {
   try {
@@ -105,7 +105,7 @@ Future<T> callEndpointMethodAndHandleExceptions<T>(
   }
 }
 
-Stream<T> callEndpointStreamMethodAndHandleExceptions<T>(
+Stream<T> callStreamFunctionAndHandleExceptions<T>(
   Future<Stream<T>> Function() call,
 ) async* {
   try {
@@ -151,7 +151,7 @@ typedef TestClosure<T> = void Function(
 Function(String, TestClosure<T>)
     buildWithServerpod<T extends TestEndpointsBase>(
   TestServerpod<T> testServerpod, {
-  resetSessionBetweenTests = false,
+  resetStateBetweenTests = true,
 }) {
   return (
     String testGroupName,
@@ -171,7 +171,7 @@ Function(String, TestClosure<T>)
         await testSession.destroy();
       });
 
-      if (resetSessionBetweenTests) {
+      if (resetStateBetweenTests) {
         tearDown(() async {
           testSession = await testSession.copyWith() as InternalTestSession;
         });

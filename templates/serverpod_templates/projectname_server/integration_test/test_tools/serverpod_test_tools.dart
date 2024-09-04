@@ -63,7 +63,7 @@ class ExampleEndpoint {
     _i1.TestSession session,
     String name,
   ) async {
-    return _i1.callEndpointMethodAndHandleExceptions(() async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var callContext = await _endpointDispatch.getMethodCallContext(
         createSessionCallback: (_) =>
             (session as _i1.InternalTestSession).serverpodSession,

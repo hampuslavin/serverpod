@@ -4,8 +4,6 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
-import '../../keywords.dart';
-
 class TestToolsGenerator {
   final ProtocolDefinition protocolDefinition;
   final GeneratorConfig config;
@@ -88,12 +86,14 @@ class TestToolsGenerator {
       MethodDefinition method, EndpointDefinition endpoint) {
     return Method(
       (methodBuilder) {
-        bool isStream = method.returnType.dartType?.isDartAsyncStream ?? false;
+        bool returnsStream = method.returnType.isStreamType;
+        bool hasStreamParameter =
+            method.parameters.any((p) => p.type.isStreamType);
 
         methodBuilder
           ..name = method.name
           ..returns = method.returnType.reference(true, config: config)
-          ..modifier = isStream ? null : MethodModifier.async
+          ..modifier = returnsStream ? null : MethodModifier.async
           ..requiredParameters.addAll(
             [
               Parameter(
@@ -110,8 +110,10 @@ class TestToolsGenerator {
             ],
           );
 
-        methodBuilder.body = isStream
-            ? _buildEndpointStreamMethodCall(endpoint, method)
+        methodBuilder.body = returnsStream || hasStreamParameter
+            ? _buildEndpointStreamMethodCall(endpoint, method,
+                hasStreamParameter: hasStreamParameter,
+                returnsStream: returnsStream)
             : _buildEndpointMethodCall(endpoint, method);
       },
     );
@@ -161,14 +163,18 @@ class TestToolsGenerator {
         ..returns,
     ).closure;
 
-    return refer('callEndpointMethodAndHandleExceptions', serverpodTestUrl)
+    return refer('callAwaitableFunctionAndHandleExceptions', serverpodTestUrl)
         .call([closure])
         .returned
         .statement;
   }
 
   Code _buildEndpointStreamMethodCall(
-      EndpointDefinition endpoint, MethodDefinition method) {
+    EndpointDefinition endpoint,
+    MethodDefinition method, {
+    required hasStreamParameter,
+    required returnsStream,
+  }) {
     var parameters =
         method.parameters.where((p) => !p.type.isStreamType).toList();
     var streamParameters =
@@ -222,8 +228,11 @@ class TestToolsGenerator {
         ..returns,
     ).closure;
 
-    return refer(
-            'callEndpointStreamMethodAndHandleExceptions', serverpodTestUrl)
+    var exceptionHandlerFunctionName = returnsStream
+        ? 'callStreamFunctionAndHandleExceptions'
+        : 'callAwaitableFunctionAndHandleExceptions';
+
+    return refer(exceptionHandlerFunctionName, serverpodTestUrl)
         .call([closure])
         .returned
         .statement;
