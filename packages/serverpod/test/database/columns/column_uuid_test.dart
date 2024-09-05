@@ -33,7 +33,7 @@ void main() {
           'when equals compared to uuid value then output is equals expression.',
           () {
         var comparisonExpression = column.equals(
-          UuidValue.fromString(Uuid.NAMESPACE_NIL),
+          UuidValue.fromString(Namespace.nil.value),
         );
 
         expect(
@@ -54,7 +54,7 @@ void main() {
           'when NOT equals compared to uuid value then output is NOT equals expression.',
           () {
         var comparisonExpression =
-            column.notEquals(UuidValue.fromString(Uuid.NAMESPACE_NIL));
+            column.notEquals(UuidValue.fromString(Namespace.nil.value));
 
         expect(comparisonExpression.toString(),
             '$column IS DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');
