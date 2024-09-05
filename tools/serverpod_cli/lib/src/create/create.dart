@@ -349,10 +349,6 @@ void _copyServerUpgrade(
   required String name,
   bool skipMain = false,
 }) {
-  var dbPassword = generateRandomString();
-  var dbProductionPassword = generateRandomString();
-  var dbStagingPassword = generateRandomString();
-
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
@@ -388,18 +384,26 @@ void _copyServerUpgrade(
         ),
         Replacement(
           slotName: 'DB_PASSWORD',
-          replacement: dbPassword,
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'DB_TEST_PASSWORD',
+          replacement: generateRandomString(),
         ),
         Replacement(
           slotName: 'DB_PRODUCTION_PASSWORD',
-          replacement: dbProductionPassword,
+          replacement: generateRandomString(),
         ),
         Replacement(
           slotName: 'DB_STAGING_PASSWORD',
-          replacement: dbStagingPassword,
+          replacement: generateRandomString(),
         ),
         Replacement(
           slotName: 'REDIS_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'REDIS_TEST_PASSWORD',
           replacement: generateRandomString(),
         ),
       ],

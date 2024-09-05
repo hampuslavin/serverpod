@@ -174,7 +174,7 @@ class DurationDefaultPersistRepository {
   const DurationDefaultPersistRepository._();
 
   Future<List<DurationDefaultPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -183,7 +183,7 @@ class DurationDefaultPersistRepository {
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DurationDefaultPersist>(
+    return databaseAccessor.db.find<DurationDefaultPersist>(
       where: where?.call(DurationDefaultPersist.t),
       orderBy: orderBy?.call(DurationDefaultPersist.t),
       orderByList: orderByList?.call(DurationDefaultPersist.t),
@@ -195,7 +195,7 @@ class DurationDefaultPersistRepository {
   }
 
   Future<DurationDefaultPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
@@ -203,7 +203,7 @@ class DurationDefaultPersistRepository {
     _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DurationDefaultPersist>(
+    return databaseAccessor.db.findFirstRow<DurationDefaultPersist>(
       where: where?.call(DurationDefaultPersist.t),
       orderBy: orderBy?.call(DurationDefaultPersist.t),
       orderByList: orderByList?.call(DurationDefaultPersist.t),
@@ -214,45 +214,45 @@ class DurationDefaultPersistRepository {
   }
 
   Future<DurationDefaultPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DurationDefaultPersist>(
+    return databaseAccessor.db.findById<DurationDefaultPersist>(
       id,
       transaction: transaction,
     );
   }
 
   Future<List<DurationDefaultPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DurationDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DurationDefaultPersist>(
+    return databaseAccessor.db.insert<DurationDefaultPersist>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<DurationDefaultPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DurationDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DurationDefaultPersist>(
+    return databaseAccessor.db.insertRow<DurationDefaultPersist>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<DurationDefaultPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DurationDefaultPersist> rows, {
     _i1.ColumnSelections<DurationDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DurationDefaultPersist>(
+    return databaseAccessor.db.update<DurationDefaultPersist>(
       rows,
       columns: columns?.call(DurationDefaultPersist.t),
       transaction: transaction,
@@ -260,12 +260,12 @@ class DurationDefaultPersistRepository {
   }
 
   Future<DurationDefaultPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DurationDefaultPersist row, {
     _i1.ColumnSelections<DurationDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DurationDefaultPersist>(
+    return databaseAccessor.db.updateRow<DurationDefaultPersist>(
       row,
       columns: columns?.call(DurationDefaultPersist.t),
       transaction: transaction,
@@ -273,45 +273,45 @@ class DurationDefaultPersistRepository {
   }
 
   Future<List<DurationDefaultPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DurationDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DurationDefaultPersist>(
+    return databaseAccessor.db.delete<DurationDefaultPersist>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<DurationDefaultPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DurationDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DurationDefaultPersist>(
+    return databaseAccessor.db.deleteRow<DurationDefaultPersist>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<DurationDefaultPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DurationDefaultPersist>(
+    return databaseAccessor.db.deleteWhere<DurationDefaultPersist>(
       where: where(DurationDefaultPersist.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DurationDefaultPersist>(
+    return databaseAccessor.db.count<DurationDefaultPersist>(
       where: where?.call(DurationDefaultPersist.t),
       limit: limit,
       transaction: transaction,

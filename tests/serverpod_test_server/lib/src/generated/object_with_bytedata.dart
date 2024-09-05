@@ -166,7 +166,7 @@ class ObjectWithByteDataRepository {
   const ObjectWithByteDataRepository._();
 
   Future<List<ObjectWithByteData>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     int? offset,
@@ -175,7 +175,7 @@ class ObjectWithByteDataRepository {
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectWithByteData>(
+    return databaseAccessor.db.find<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -187,7 +187,7 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
@@ -195,7 +195,7 @@ class ObjectWithByteDataRepository {
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<ObjectWithByteData>(
+    return databaseAccessor.db.findFirstRow<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -206,45 +206,45 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithByteData>(
+    return databaseAccessor.db.findById<ObjectWithByteData>(
       id,
       transaction: transaction,
     );
   }
 
   Future<List<ObjectWithByteData>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectWithByteData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithByteData>(
+    return databaseAccessor.db.insert<ObjectWithByteData>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<ObjectWithByteData> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithByteData>(
+    return databaseAccessor.db.insertRow<ObjectWithByteData>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<ObjectWithByteData>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectWithByteData> rows, {
     _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<ObjectWithByteData>(
+    return databaseAccessor.db.update<ObjectWithByteData>(
       rows,
       columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
@@ -252,12 +252,12 @@ class ObjectWithByteDataRepository {
   }
 
   Future<ObjectWithByteData> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectWithByteData row, {
     _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<ObjectWithByteData>(
+    return databaseAccessor.db.updateRow<ObjectWithByteData>(
       row,
       columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
@@ -265,45 +265,45 @@ class ObjectWithByteDataRepository {
   }
 
   Future<List<ObjectWithByteData>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<ObjectWithByteData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithByteData>(
+    return databaseAccessor.db.delete<ObjectWithByteData>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<ObjectWithByteData> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithByteData>(
+    return databaseAccessor.db.deleteRow<ObjectWithByteData>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<ObjectWithByteData>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<ObjectWithByteData>(
+    return databaseAccessor.db.deleteWhere<ObjectWithByteData>(
       where: where(ObjectWithByteData.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectWithByteData>(
+    return databaseAccessor.db.count<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       limit: limit,
       transaction: transaction,

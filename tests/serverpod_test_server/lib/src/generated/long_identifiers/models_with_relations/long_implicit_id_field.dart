@@ -213,7 +213,7 @@ class LongImplicitIdFieldRepository {
   const LongImplicitIdFieldRepository._();
 
   Future<List<LongImplicitIdField>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
     int? limit,
     int? offset,
@@ -222,7 +222,7 @@ class LongImplicitIdFieldRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<LongImplicitIdField>(
+    return databaseAccessor.db.find<LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -234,7 +234,7 @@ class LongImplicitIdFieldRepository {
   }
 
   Future<LongImplicitIdField?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
@@ -242,7 +242,7 @@ class LongImplicitIdFieldRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<LongImplicitIdField>(
+    return databaseAccessor.db.findFirstRow<LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -253,45 +253,45 @@ class LongImplicitIdFieldRepository {
   }
 
   Future<LongImplicitIdField?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<LongImplicitIdField>(
+    return databaseAccessor.db.findById<LongImplicitIdField>(
       id,
       transaction: transaction,
     );
   }
 
   Future<List<LongImplicitIdField>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<LongImplicitIdField> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<LongImplicitIdField>(
+    return databaseAccessor.db.insert<LongImplicitIdField>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<LongImplicitIdField> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     LongImplicitIdField row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<LongImplicitIdField>(
+    return databaseAccessor.db.insertRow<LongImplicitIdField>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<LongImplicitIdField>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<LongImplicitIdField> rows, {
     _i1.ColumnSelections<LongImplicitIdFieldTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<LongImplicitIdField>(
+    return databaseAccessor.db.update<LongImplicitIdField>(
       rows,
       columns: columns?.call(LongImplicitIdField.t),
       transaction: transaction,
@@ -299,12 +299,12 @@ class LongImplicitIdFieldRepository {
   }
 
   Future<LongImplicitIdField> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     LongImplicitIdField row, {
     _i1.ColumnSelections<LongImplicitIdFieldTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<LongImplicitIdField>(
+    return databaseAccessor.db.updateRow<LongImplicitIdField>(
       row,
       columns: columns?.call(LongImplicitIdField.t),
       transaction: transaction,
@@ -312,45 +312,45 @@ class LongImplicitIdFieldRepository {
   }
 
   Future<List<LongImplicitIdField>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<LongImplicitIdField> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<LongImplicitIdField>(
+    return databaseAccessor.db.delete<LongImplicitIdField>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<LongImplicitIdField> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     LongImplicitIdField row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<LongImplicitIdField>(
+    return databaseAccessor.db.deleteRow<LongImplicitIdField>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<LongImplicitIdField>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<LongImplicitIdField>(
+    return databaseAccessor.db.deleteWhere<LongImplicitIdField>(
       where: where(LongImplicitIdField.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<LongImplicitIdField>(
+    return databaseAccessor.db.count<LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       limit: limit,
       transaction: transaction,

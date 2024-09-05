@@ -226,7 +226,7 @@ class CompanyRepository {
   final attachRow = const CompanyAttachRowRepository._();
 
   Future<List<Company>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     int? offset,
@@ -236,7 +236,7 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return session.db.find<Company>(
+    return databaseAccessor.db.find<Company>(
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -249,7 +249,7 @@ class CompanyRepository {
   }
 
   Future<Company?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? offset,
     _i1.OrderByBuilder<CompanyTable>? orderBy,
@@ -258,7 +258,7 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return session.db.findFirstRow<Company>(
+    return databaseAccessor.db.findFirstRow<Company>(
       where: where?.call(Company.t),
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
@@ -270,12 +270,12 @@ class CompanyRepository {
   }
 
   Future<Company?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return session.db.findById<Company>(
+    return databaseAccessor.db.findById<Company>(
       id,
       transaction: transaction,
       include: include,
@@ -283,34 +283,34 @@ class CompanyRepository {
   }
 
   Future<List<Company>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Company>(
+    return databaseAccessor.db.insert<Company>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<Company> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Company>(
+    return databaseAccessor.db.insertRow<Company>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<Company>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Company> rows, {
     _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Company>(
+    return databaseAccessor.db.update<Company>(
       rows,
       columns: columns?.call(Company.t),
       transaction: transaction,
@@ -318,12 +318,12 @@ class CompanyRepository {
   }
 
   Future<Company> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Company row, {
     _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Company>(
+    return databaseAccessor.db.updateRow<Company>(
       row,
       columns: columns?.call(Company.t),
       transaction: transaction,
@@ -331,45 +331,45 @@ class CompanyRepository {
   }
 
   Future<List<Company>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Company>(
+    return databaseAccessor.db.delete<Company>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<Company> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Company>(
+    return databaseAccessor.db.deleteRow<Company>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<Company>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<CompanyTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Company>(
+    return databaseAccessor.db.deleteWhere<Company>(
       where: where(Company.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Company>(
+    return databaseAccessor.db.count<Company>(
       where: where?.call(Company.t),
       limit: limit,
       transaction: transaction,
@@ -381,7 +381,7 @@ class CompanyAttachRowRepository {
   const CompanyAttachRowRepository._();
 
   Future<void> town(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Company company,
     _i2.Town town, {
     _i1.Transaction? transaction,
@@ -394,7 +394,7 @@ class CompanyAttachRowRepository {
     }
 
     var $company = company.copyWith(townId: town.id);
-    await session.db.updateRow<Company>(
+    await databaseAccessor.db.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
       transaction: transaction,

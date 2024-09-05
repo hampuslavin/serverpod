@@ -226,7 +226,7 @@ class CommentRepository {
   final attachRow = const CommentAttachRowRepository._();
 
   Future<List<Comment>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     int? offset,
@@ -236,7 +236,7 @@ class CommentRepository {
     _i1.Transaction? transaction,
     CommentInclude? include,
   }) async {
-    return session.db.find<Comment>(
+    return databaseAccessor.db.find<Comment>(
       where: where?.call(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
@@ -249,7 +249,7 @@ class CommentRepository {
   }
 
   Future<Comment?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
@@ -258,7 +258,7 @@ class CommentRepository {
     _i1.Transaction? transaction,
     CommentInclude? include,
   }) async {
-    return session.db.findFirstRow<Comment>(
+    return databaseAccessor.db.findFirstRow<Comment>(
       where: where?.call(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
@@ -270,12 +270,12 @@ class CommentRepository {
   }
 
   Future<Comment?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     CommentInclude? include,
   }) async {
-    return session.db.findById<Comment>(
+    return databaseAccessor.db.findById<Comment>(
       id,
       transaction: transaction,
       include: include,
@@ -283,34 +283,34 @@ class CommentRepository {
   }
 
   Future<List<Comment>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Comment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Comment>(
+    return databaseAccessor.db.insert<Comment>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<Comment> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Comment>(
+    return databaseAccessor.db.insertRow<Comment>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<Comment>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Comment> rows, {
     _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Comment>(
+    return databaseAccessor.db.update<Comment>(
       rows,
       columns: columns?.call(Comment.t),
       transaction: transaction,
@@ -318,12 +318,12 @@ class CommentRepository {
   }
 
   Future<Comment> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Comment row, {
     _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Comment>(
+    return databaseAccessor.db.updateRow<Comment>(
       row,
       columns: columns?.call(Comment.t),
       transaction: transaction,
@@ -331,45 +331,45 @@ class CommentRepository {
   }
 
   Future<List<Comment>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Comment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Comment>(
+    return databaseAccessor.db.delete<Comment>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<Comment> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Comment>(
+    return databaseAccessor.db.deleteRow<Comment>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<Comment>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Comment>(
+    return databaseAccessor.db.deleteWhere<Comment>(
       where: where(Comment.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Comment>(
+    return databaseAccessor.db.count<Comment>(
       where: where?.call(Comment.t),
       limit: limit,
       transaction: transaction,
@@ -381,7 +381,7 @@ class CommentAttachRowRepository {
   const CommentAttachRowRepository._();
 
   Future<void> order(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Comment comment,
     _i2.Order order, {
     _i1.Transaction? transaction,
@@ -394,7 +394,7 @@ class CommentAttachRowRepository {
     }
 
     var $comment = comment.copyWith(orderId: order.id);
-    await session.db.updateRow<Comment>(
+    await databaseAccessor.db.updateRow<Comment>(
       $comment,
       columns: [Comment.t.orderId],
       transaction: transaction,

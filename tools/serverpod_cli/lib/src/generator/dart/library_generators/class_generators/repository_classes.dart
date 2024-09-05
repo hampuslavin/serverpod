@@ -225,8 +225,8 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
+          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..name = 'databaseAccessor'),
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
@@ -277,7 +277,7 @@ class BuildRepositoryClass {
             ..named = true),
       ])
       ..modifier = MethodModifier.async
-      ..body = refer('session')
+      ..body = refer('databaseAccessor')
           .property('db')
           .property('find')
           .call([], {
@@ -319,8 +319,8 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
+          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..name = 'databaseAccessor'),
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
@@ -365,7 +365,7 @@ class BuildRepositoryClass {
             ..named = true),
       ])
       ..modifier = MethodModifier.async
-      ..body = refer('session')
+      ..body = refer('databaseAccessor')
           .property('db')
           .property('findFirstRow')
           .call(
@@ -406,8 +406,8 @@ class BuildRepositoryClass {
       )
       ..requiredParameters.addAll([
         Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
+          ..type = refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+          ..name = 'databaseAccessor'),
         Parameter((p) => p
           ..type = refer('int')
           ..name = 'id'),
@@ -429,7 +429,7 @@ class BuildRepositoryClass {
             ..named = true),
       ])
       ..modifier = MethodModifier.async
-      ..body = refer('session')
+      ..body = refer('databaseAccessor')
           .property('db')
           .property('findById')
           .call(
@@ -455,8 +455,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer('List<$className>')
             ..name = 'rows'),
@@ -471,7 +472,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('insert')
             .call([
@@ -497,8 +498,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer(className)
             ..name = 'row'),
@@ -513,7 +515,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('insertRow')
             .call([
@@ -539,8 +541,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer('List<$className>')
             ..name = 'rows'),
@@ -562,7 +565,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('update')
             .call([
@@ -591,8 +594,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer(className)
             ..name = 'row'),
@@ -614,7 +618,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('updateRow')
             .call([
@@ -651,8 +655,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer('List<$className>')
             ..name = 'rows'),
@@ -667,7 +672,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('delete')
             .call([
@@ -695,8 +700,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
           Parameter((p) => p
             ..type = refer(className)
             ..name = 'row'),
@@ -711,7 +717,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('deleteRow')
             .call([
@@ -745,8 +751,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
         ])
         ..optionalParameters.addAll([
           Parameter((p) => p
@@ -767,7 +774,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('deleteWhere')
             .call([], {
@@ -792,8 +799,9 @@ class BuildRepositoryClass {
         )
         ..requiredParameters.addAll([
           Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+            ..type =
+                refer('DatabaseAccessor', 'package:serverpod/serverpod.dart')
+            ..name = 'databaseAccessor'),
         ])
         ..optionalParameters.addAll([
           Parameter((p) => p
@@ -818,7 +826,7 @@ class BuildRepositoryClass {
             ..named = true),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
+        ..body = refer('databaseAccessor')
             .property('db')
             .property('count')
             .call([], {
@@ -898,8 +906,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -971,8 +980,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1038,8 +1048,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1249,8 +1260,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1316,8 +1328,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1374,8 +1387,9 @@ class BuildRepositoryClass {
         ..requiredParameters.addAll([
           Parameter((parameterBuilder) {
             parameterBuilder
-              ..name = 'session'
-              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+              ..name = 'databaseAccessor'
+              ..type =
+                  refer('DatabaseAccessor', 'package:serverpod/serverpod.dart');
           }),
           Parameter((parameterBuilder) {
             parameterBuilder
@@ -1776,7 +1790,7 @@ class BuildRepositoryClass {
     String localCopyVariable = _createEscapedLocalVar(rowName);
     return (BlockBuilder()
           ..statements.addAll([
-            refer('session')
+            refer('databaseAccessor')
                 .property('db')
                 .property(property)
                 .call([

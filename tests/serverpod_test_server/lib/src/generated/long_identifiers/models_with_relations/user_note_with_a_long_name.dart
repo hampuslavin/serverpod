@@ -214,7 +214,7 @@ class UserNoteWithALongNameRepository {
   const UserNoteWithALongNameRepository._();
 
   Future<List<UserNoteWithALongName>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     int? limit,
     int? offset,
@@ -223,7 +223,7 @@ class UserNoteWithALongNameRepository {
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UserNoteWithALongName>(
+    return databaseAccessor.db.find<UserNoteWithALongName>(
       where: where?.call(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
@@ -235,7 +235,7 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
@@ -243,7 +243,7 @@ class UserNoteWithALongNameRepository {
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<UserNoteWithALongName>(
+    return databaseAccessor.db.findFirstRow<UserNoteWithALongName>(
       where: where?.call(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
@@ -254,45 +254,45 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserNoteWithALongName>(
+    return databaseAccessor.db.findById<UserNoteWithALongName>(
       id,
       transaction: transaction,
     );
   }
 
   Future<List<UserNoteWithALongName>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserNoteWithALongName>(
+    return databaseAccessor.db.insert<UserNoteWithALongName>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<UserNoteWithALongName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserNoteWithALongName>(
+    return databaseAccessor.db.insertRow<UserNoteWithALongName>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<UserNoteWithALongName>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteWithALongName> rows, {
     _i1.ColumnSelections<UserNoteWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<UserNoteWithALongName>(
+    return databaseAccessor.db.update<UserNoteWithALongName>(
       rows,
       columns: columns?.call(UserNoteWithALongName.t),
       transaction: transaction,
@@ -300,12 +300,12 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<UserNoteWithALongName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteWithALongName row, {
     _i1.ColumnSelections<UserNoteWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<UserNoteWithALongName>(
+    return databaseAccessor.db.updateRow<UserNoteWithALongName>(
       row,
       columns: columns?.call(UserNoteWithALongName.t),
       transaction: transaction,
@@ -313,45 +313,45 @@ class UserNoteWithALongNameRepository {
   }
 
   Future<List<UserNoteWithALongName>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<UserNoteWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserNoteWithALongName>(
+    return databaseAccessor.db.delete<UserNoteWithALongName>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<UserNoteWithALongName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     UserNoteWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserNoteWithALongName>(
+    return databaseAccessor.db.deleteRow<UserNoteWithALongName>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<UserNoteWithALongName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<UserNoteWithALongName>(
+    return databaseAccessor.db.deleteWhere<UserNoteWithALongName>(
       where: where(UserNoteWithALongName.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserNoteWithALongName>(
+    return databaseAccessor.db.count<UserNoteWithALongName>(
       where: where?.call(UserNoteWithALongName.t),
       limit: limit,
       transaction: transaction,
