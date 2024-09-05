@@ -1,0 +1,41 @@
+# This is the configuration file for your local test environment. By
+# default, it runs a single server on port 8090. To set up your server, you will
+# need to add the name of the database you are connecting to and the user name.
+# The password for the database is stored in the config/passwords.yaml.
+#
+# When running your server locally, the server ports are the same as the public
+# facing ports.
+
+# Configuration for the main API test server.
+apiServer:
+  port: 9080
+  publicHost: localhost
+  publicPort: 9080
+  publicScheme: http
+
+# Configuration for the Insights test server.
+insightsServer:
+  port: 9081
+  publicHost: localhost
+  publicPort: 9081
+  publicScheme: http
+
+# Configuration for the web test server.
+webServer:
+  port: 9082
+  publicHost: localhost
+  publicPort: 9082
+  publicScheme: http
+
+# This is the database setup for your test server.
+database:
+  host: localhost
+  port: 9090
+  name: projectname_test
+  user: postgres
+
+# This is the setup for your Redis test instance.
+redis:
+  enabled: false
+  host: localhost
+  port: 9091
