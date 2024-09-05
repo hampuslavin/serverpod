@@ -33,25 +33,31 @@ class TestToolsGenerator {
   }
 
   Class _buildEndpointClassWithMethodCalls(EndpointDefinition endpoint) {
+    // Unused fields result in analyzer warnings in generated code
+    bool classNeedsFields = endpoint.methods.isNotEmpty;
+    List<Field> classFields = classNeedsFields
+        ? [
+            Field(
+              (fieldBuilder) {
+                fieldBuilder
+                  ..name = '_endpointDispatch'
+                  ..modifier = FieldModifier.final$
+                  ..type = refer('EndpointDispatch', serverpodUrl(true));
+              },
+            ),
+            Field((fieldBuilder) {
+              fieldBuilder
+                ..name = '_serializationManager'
+                ..modifier = FieldModifier.final$
+                ..type = refer('SerializationManager', serverpodUrl(true));
+            })
+          ]
+        : [];
+
     return Class((classBuilder) {
       classBuilder
         ..name = endpoint.className
-        ..fields.addAll([
-          Field(
-            (fieldBuilder) {
-              fieldBuilder
-                ..name = '_endpointDispatch'
-                ..modifier = FieldModifier.final$
-                ..type = refer('EndpointDispatch', serverpodUrl(true));
-            },
-          ),
-          Field((fieldBuilder) {
-            fieldBuilder
-              ..name = '_serializationManager'
-              ..modifier = FieldModifier.final$
-              ..type = refer('SerializationManager', serverpodUrl(true));
-          })
-        ])
+        ..fields.addAll(classFields)
         ..constructors.add(
           Constructor(
             (constructorBuilder) {
@@ -60,12 +66,12 @@ class TestToolsGenerator {
                   Parameter(
                     (p) => p
                       ..name = '_endpointDispatch'
-                      ..toThis = true,
+                      ..toThis = classNeedsFields,
                   ),
                   Parameter(
                     (p) => p
                       ..name = '_serializationManager'
-                      ..toThis = true,
+                      ..toThis = classNeedsFields,
                   ),
                 ],
               );
@@ -203,7 +209,7 @@ class TestToolsGenerator {
                   for (var parameter in parameters)
                     literalString(parameter.name): refer(parameter.name).code,
                 }),
-                "requestedInputStreams":
+                'requestedInputStreams':
                     literalList(streamParameters.map((p) => p.name)),
                 'serializationManager': refer('_serializationManager'),
               }))
@@ -350,7 +356,7 @@ class TestToolsGenerator {
     library.directives.addAll([
       Directive.import(protocolPackageImportPath),
       Directive.import(endpointsPath),
-      Directive.export(serverpodTestUrl, show: [
+      Directive.export(serverpodTestUrl, show: const [
         'TestSession',
         'UnauthenticatedEndpointCallTestException',
         'InsufficientEndpointAccessTestException'

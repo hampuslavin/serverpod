@@ -88,6 +88,7 @@ abstract class Session implements DatabaseAccessor {
   Database? _db;
 
   /// Access to the database.
+  @override
   Database get db {
     var database = _db;
     if (database == null) {

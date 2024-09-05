@@ -11,8 +11,8 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
-import 'package:deletable_server/src/generated/protocol.dart';
-import 'package:deletable_server/src/generated/endpoints.dart';
+import 'package:projectname_server/src/generated/protocol.dart';
+import 'package:projectname_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test.dart'
     show
         TestSession,

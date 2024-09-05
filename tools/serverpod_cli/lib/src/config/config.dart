@@ -255,8 +255,8 @@ class GeneratorConfig {
     if (relativeServerTestToolsPathParts != null &&
         packageConfig['serverpod_test'] == null) {
       log.warning(
-        "A `server_test_tools_path` was set in the generator config, "
-        "but the `serverpod_test` package is not installed. "
+        'A `server_test_tools_path` was set in the generator config, '
+        'but the `serverpod_test` package is not installed. '
         "Make sure it's part of your pubspec.yaml file and run `dart pub get`. "
         "If you don't want to use `serverpod_test`, then remove `server_test_tools_path`.",
       );
