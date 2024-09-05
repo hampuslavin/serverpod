@@ -229,7 +229,7 @@ class RelatedUniqueDataRepository {
   final attachRow = const RelatedUniqueDataAttachRowRepository._();
 
   Future<List<RelatedUniqueData>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
@@ -239,7 +239,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.find<RelatedUniqueData>(
+    return databaseAccessor.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -252,7 +252,7 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
@@ -261,7 +261,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.findFirstRow<RelatedUniqueData>(
+    return databaseAccessor.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -273,12 +273,12 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.db.findById<RelatedUniqueData>(
+    return databaseAccessor.db.findById<RelatedUniqueData>(
       id,
       transaction: transaction,
       include: include,
@@ -286,34 +286,34 @@ class RelatedUniqueDataRepository {
   }
 
   Future<List<RelatedUniqueData>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RelatedUniqueData>(
+    return databaseAccessor.db.insert<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<RelatedUniqueData> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<RelatedUniqueData>(
+    return databaseAccessor.db.insertRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<RelatedUniqueData>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelatedUniqueData> rows, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<RelatedUniqueData>(
+    return databaseAccessor.db.update<RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -321,12 +321,12 @@ class RelatedUniqueDataRepository {
   }
 
   Future<RelatedUniqueData> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelatedUniqueData row, {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<RelatedUniqueData>(
+    return databaseAccessor.db.updateRow<RelatedUniqueData>(
       row,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -334,45 +334,45 @@ class RelatedUniqueDataRepository {
   }
 
   Future<List<RelatedUniqueData>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RelatedUniqueData>(
+    return databaseAccessor.db.delete<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<RelatedUniqueData> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<RelatedUniqueData>(
+    return databaseAccessor.db.deleteRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<RelatedUniqueData>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<RelatedUniqueData>(
+    return databaseAccessor.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<RelatedUniqueData>(
+    return databaseAccessor.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
       transaction: transaction,
@@ -384,7 +384,7 @@ class RelatedUniqueDataAttachRowRepository {
   const RelatedUniqueDataAttachRowRepository._();
 
   Future<void> uniqueData(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelatedUniqueData relatedUniqueData,
     _i2.UniqueData uniqueData, {
     _i1.Transaction? transaction,
@@ -398,7 +398,7 @@ class RelatedUniqueDataAttachRowRepository {
 
     var $relatedUniqueData =
         relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
-    await session.db.updateRow<RelatedUniqueData>(
+    await databaseAccessor.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
       transaction: transaction,

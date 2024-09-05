@@ -220,7 +220,7 @@ class DateTimeDefaultModelRepository {
   const DateTimeDefaultModelRepository._();
 
   Future<List<DateTimeDefaultModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -229,7 +229,7 @@ class DateTimeDefaultModelRepository {
     _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<DateTimeDefaultModel>(
+    return databaseAccessor.db.find<DateTimeDefaultModel>(
       where: where?.call(DateTimeDefaultModel.t),
       orderBy: orderBy?.call(DateTimeDefaultModel.t),
       orderByList: orderByList?.call(DateTimeDefaultModel.t),
@@ -241,7 +241,7 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
@@ -249,7 +249,7 @@ class DateTimeDefaultModelRepository {
     _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<DateTimeDefaultModel>(
+    return databaseAccessor.db.findFirstRow<DateTimeDefaultModel>(
       where: where?.call(DateTimeDefaultModel.t),
       orderBy: orderBy?.call(DateTimeDefaultModel.t),
       orderByList: orderByList?.call(DateTimeDefaultModel.t),
@@ -260,45 +260,45 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DateTimeDefaultModel>(
+    return databaseAccessor.db.findById<DateTimeDefaultModel>(
       id,
       transaction: transaction,
     );
   }
 
   Future<List<DateTimeDefaultModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DateTimeDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DateTimeDefaultModel>(
+    return databaseAccessor.db.insert<DateTimeDefaultModel>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<DateTimeDefaultModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DateTimeDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DateTimeDefaultModel>(
+    return databaseAccessor.db.insertRow<DateTimeDefaultModel>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<DateTimeDefaultModel>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DateTimeDefaultModel> rows, {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<DateTimeDefaultModel>(
+    return databaseAccessor.db.update<DateTimeDefaultModel>(
       rows,
       columns: columns?.call(DateTimeDefaultModel.t),
       transaction: transaction,
@@ -306,12 +306,12 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<DateTimeDefaultModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DateTimeDefaultModel row, {
     _i1.ColumnSelections<DateTimeDefaultModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<DateTimeDefaultModel>(
+    return databaseAccessor.db.updateRow<DateTimeDefaultModel>(
       row,
       columns: columns?.call(DateTimeDefaultModel.t),
       transaction: transaction,
@@ -319,45 +319,45 @@ class DateTimeDefaultModelRepository {
   }
 
   Future<List<DateTimeDefaultModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<DateTimeDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DateTimeDefaultModel>(
+    return databaseAccessor.db.delete<DateTimeDefaultModel>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<DateTimeDefaultModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     DateTimeDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DateTimeDefaultModel>(
+    return databaseAccessor.db.deleteRow<DateTimeDefaultModel>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<DateTimeDefaultModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<DateTimeDefaultModel>(
+    return databaseAccessor.db.deleteWhere<DateTimeDefaultModel>(
       where: where(DateTimeDefaultModel.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<DateTimeDefaultModel>(
+    return databaseAccessor.db.count<DateTimeDefaultModel>(
       where: where?.call(DateTimeDefaultModel.t),
       limit: limit,
       transaction: transaction,

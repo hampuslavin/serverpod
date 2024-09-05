@@ -275,7 +275,7 @@ class PostRepository {
   final detachRow = const PostDetachRowRepository._();
 
   Future<List<Post>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
@@ -285,7 +285,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.find<Post>(
+    return databaseAccessor.db.find<Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -298,7 +298,7 @@ class PostRepository {
   }
 
   Future<Post?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
     _i1.OrderByBuilder<PostTable>? orderBy,
@@ -307,7 +307,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.findFirstRow<Post>(
+    return databaseAccessor.db.findFirstRow<Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -319,12 +319,12 @@ class PostRepository {
   }
 
   Future<Post?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.db.findById<Post>(
+    return databaseAccessor.db.findById<Post>(
       id,
       transaction: transaction,
       include: include,
@@ -332,34 +332,34 @@ class PostRepository {
   }
 
   Future<List<Post>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Post>(
+    return databaseAccessor.db.insert<Post>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<Post> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Post>(
+    return databaseAccessor.db.insertRow<Post>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<Post>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Post> rows, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<Post>(
+    return databaseAccessor.db.update<Post>(
       rows,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -367,12 +367,12 @@ class PostRepository {
   }
 
   Future<Post> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Post row, {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<Post>(
+    return databaseAccessor.db.updateRow<Post>(
       row,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -380,45 +380,45 @@ class PostRepository {
   }
 
   Future<List<Post>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Post>(
+    return databaseAccessor.db.delete<Post>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<Post> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Post>(
+    return databaseAccessor.db.deleteRow<Post>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<Post>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<Post>(
+    return databaseAccessor.db.deleteWhere<Post>(
       where: where(Post.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Post>(
+    return databaseAccessor.db.count<Post>(
       where: where?.call(Post.t),
       limit: limit,
       transaction: transaction,
@@ -430,7 +430,7 @@ class PostAttachRowRepository {
   const PostAttachRowRepository._();
 
   Future<void> previous(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Post post,
     _i2.Post previous, {
     _i1.Transaction? transaction,
@@ -443,7 +443,7 @@ class PostAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: post.id);
-    await session.db.updateRow<_i2.Post>(
+    await databaseAccessor.db.updateRow<_i2.Post>(
       $previous,
       columns: [_i2.Post.t.nextId],
       transaction: transaction,
@@ -451,7 +451,7 @@ class PostAttachRowRepository {
   }
 
   Future<void> next(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Post post,
     _i2.Post next, {
     _i1.Transaction? transaction,
@@ -464,7 +464,7 @@ class PostAttachRowRepository {
     }
 
     var $post = post.copyWith(nextId: next.id);
-    await session.db.updateRow<Post>(
+    await databaseAccessor.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
       transaction: transaction,
@@ -476,7 +476,7 @@ class PostDetachRowRepository {
   const PostDetachRowRepository._();
 
   Future<void> previous(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Post post, {
     _i1.Transaction? transaction,
   }) async {
@@ -493,7 +493,7 @@ class PostDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.updateRow<_i2.Post>(
+    await databaseAccessor.db.updateRow<_i2.Post>(
       $$previous,
       columns: [_i2.Post.t.nextId],
       transaction: transaction,
@@ -501,7 +501,7 @@ class PostDetachRowRepository {
   }
 
   Future<void> next(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     Post post, {
     _i1.Transaction? transaction,
   }) async {
@@ -510,7 +510,7 @@ class PostDetachRowRepository {
     }
 
     var $post = post.copyWith(nextId: null);
-    await session.db.updateRow<Post>(
+    await databaseAccessor.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
       transaction: transaction,

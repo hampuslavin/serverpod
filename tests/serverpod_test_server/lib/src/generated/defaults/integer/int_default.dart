@@ -186,7 +186,7 @@ class IntDefaultRepository {
   const IntDefaultRepository._();
 
   Future<List<IntDefault>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<IntDefaultTable>? where,
     int? limit,
     int? offset,
@@ -195,7 +195,7 @@ class IntDefaultRepository {
     _i1.OrderByListBuilder<IntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<IntDefault>(
+    return databaseAccessor.db.find<IntDefault>(
       where: where?.call(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -207,7 +207,7 @@ class IntDefaultRepository {
   }
 
   Future<IntDefault?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<IntDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<IntDefaultTable>? orderBy,
@@ -215,7 +215,7 @@ class IntDefaultRepository {
     _i1.OrderByListBuilder<IntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<IntDefault>(
+    return databaseAccessor.db.findFirstRow<IntDefault>(
       where: where?.call(IntDefault.t),
       orderBy: orderBy?.call(IntDefault.t),
       orderByList: orderByList?.call(IntDefault.t),
@@ -226,45 +226,45 @@ class IntDefaultRepository {
   }
 
   Future<IntDefault?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<IntDefault>(
+    return databaseAccessor.db.findById<IntDefault>(
       id,
       transaction: transaction,
     );
   }
 
   Future<List<IntDefault>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<IntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<IntDefault>(
+    return databaseAccessor.db.insert<IntDefault>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<IntDefault> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     IntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<IntDefault>(
+    return databaseAccessor.db.insertRow<IntDefault>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<IntDefault>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<IntDefault> rows, {
     _i1.ColumnSelections<IntDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<IntDefault>(
+    return databaseAccessor.db.update<IntDefault>(
       rows,
       columns: columns?.call(IntDefault.t),
       transaction: transaction,
@@ -272,12 +272,12 @@ class IntDefaultRepository {
   }
 
   Future<IntDefault> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     IntDefault row, {
     _i1.ColumnSelections<IntDefaultTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<IntDefault>(
+    return databaseAccessor.db.updateRow<IntDefault>(
       row,
       columns: columns?.call(IntDefault.t),
       transaction: transaction,
@@ -285,45 +285,45 @@ class IntDefaultRepository {
   }
 
   Future<List<IntDefault>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<IntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<IntDefault>(
+    return databaseAccessor.db.delete<IntDefault>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<IntDefault> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     IntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<IntDefault>(
+    return databaseAccessor.db.deleteRow<IntDefault>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<IntDefault>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<IntDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<IntDefault>(
+    return databaseAccessor.db.deleteWhere<IntDefault>(
       where: where(IntDefault.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<IntDefaultTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<IntDefault>(
+    return databaseAccessor.db.count<IntDefault>(
       where: where?.call(IntDefault.t),
       limit: limit,
       transaction: transaction,

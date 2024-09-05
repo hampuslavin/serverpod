@@ -219,7 +219,7 @@ class RelationEmptyModelRepository {
   final detachRow = const RelationEmptyModelDetachRowRepository._();
 
   Future<List<RelationEmptyModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? limit,
     int? offset,
@@ -229,7 +229,7 @@ class RelationEmptyModelRepository {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
   }) async {
-    return session.db.find<RelationEmptyModel>(
+    return databaseAccessor.db.find<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -242,7 +242,7 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
@@ -251,7 +251,7 @@ class RelationEmptyModelRepository {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
   }) async {
-    return session.db.findFirstRow<RelationEmptyModel>(
+    return databaseAccessor.db.findFirstRow<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
@@ -263,12 +263,12 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     int id, {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
   }) async {
-    return session.db.findById<RelationEmptyModel>(
+    return databaseAccessor.db.findById<RelationEmptyModel>(
       id,
       transaction: transaction,
       include: include,
@@ -276,34 +276,34 @@ class RelationEmptyModelRepository {
   }
 
   Future<List<RelationEmptyModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelationEmptyModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RelationEmptyModel>(
+    return databaseAccessor.db.insert<RelationEmptyModel>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<RelationEmptyModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<RelationEmptyModel>(
+    return databaseAccessor.db.insertRow<RelationEmptyModel>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<RelationEmptyModel>> update(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelationEmptyModel> rows, {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<RelationEmptyModel>(
+    return databaseAccessor.db.update<RelationEmptyModel>(
       rows,
       columns: columns?.call(RelationEmptyModel.t),
       transaction: transaction,
@@ -311,12 +311,12 @@ class RelationEmptyModelRepository {
   }
 
   Future<RelationEmptyModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationEmptyModel row, {
     _i1.ColumnSelections<RelationEmptyModelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<RelationEmptyModel>(
+    return databaseAccessor.db.updateRow<RelationEmptyModel>(
       row,
       columns: columns?.call(RelationEmptyModel.t),
       transaction: transaction,
@@ -324,45 +324,45 @@ class RelationEmptyModelRepository {
   }
 
   Future<List<RelationEmptyModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<RelationEmptyModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RelationEmptyModel>(
+    return databaseAccessor.db.delete<RelationEmptyModel>(
       rows,
       transaction: transaction,
     );
   }
 
   Future<RelationEmptyModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationEmptyModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<RelationEmptyModel>(
+    return databaseAccessor.db.deleteRow<RelationEmptyModel>(
       row,
       transaction: transaction,
     );
   }
 
   Future<List<RelationEmptyModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<RelationEmptyModel>(
+    return databaseAccessor.db.deleteWhere<RelationEmptyModel>(
       where: where(RelationEmptyModel.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseAccessor databaseAccessor, {
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<RelationEmptyModel>(
+    return databaseAccessor.db.count<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       limit: limit,
       transaction: transaction,
@@ -374,7 +374,7 @@ class RelationEmptyModelAttachRepository {
   const RelationEmptyModelAttachRepository._();
 
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationEmptyModel relationEmptyModel,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
     _i1.Transaction? transaction,
@@ -393,7 +393,7 @@ class RelationEmptyModelAttachRepository {
                   relationEmptyModel.id,
             ))
         .toList();
-    await session.db.update<_i2.EmptyModelRelationItem>(
+    await databaseAccessor.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t
@@ -408,7 +408,7 @@ class RelationEmptyModelAttachRowRepository {
   const RelationEmptyModelAttachRowRepository._();
 
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     RelationEmptyModel relationEmptyModel,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {
     _i1.Transaction? transaction,
@@ -424,7 +424,7 @@ class RelationEmptyModelAttachRowRepository {
       emptyModelRelationItem,
       $_relationEmptyModelItemsRelationEmptyModelId: relationEmptyModel.id,
     );
-    await session.db.updateRow<_i2.EmptyModelRelationItem>(
+    await databaseAccessor.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t
@@ -439,7 +439,7 @@ class RelationEmptyModelDetachRepository {
   const RelationEmptyModelDetachRepository._();
 
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     List<_i2.EmptyModelRelationItem> emptyModelRelationItem, {
     _i1.Transaction? transaction,
   }) async {
@@ -453,7 +453,7 @@ class RelationEmptyModelDetachRepository {
               $_relationEmptyModelItemsRelationEmptyModelId: null,
             ))
         .toList();
-    await session.db.update<_i2.EmptyModelRelationItem>(
+    await databaseAccessor.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t
@@ -468,7 +468,7 @@ class RelationEmptyModelDetachRowRepository {
   const RelationEmptyModelDetachRowRepository._();
 
   Future<void> items(
-    _i1.Session session,
+    _i1.DatabaseAccessor databaseAccessor,
     _i2.EmptyModelRelationItem emptyModelRelationItem, {
     _i1.Transaction? transaction,
   }) async {
@@ -480,7 +480,7 @@ class RelationEmptyModelDetachRowRepository {
       emptyModelRelationItem,
       $_relationEmptyModelItemsRelationEmptyModelId: null,
     );
-    await session.db.updateRow<_i2.EmptyModelRelationItem>(
+    await databaseAccessor.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
         _i2.EmptyModelRelationItem.t
