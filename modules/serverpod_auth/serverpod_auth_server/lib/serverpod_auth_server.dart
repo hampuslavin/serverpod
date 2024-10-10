@@ -8,6 +8,7 @@ export 'src/business/google_auth.dart';
 export 'src/business/users.dart';
 export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart';
+export 'src/generated/serverpod_test_tools.dart';
 export 'src/util/random_string.dart';
 export 'src/extensions/user_info_extension.dart';
 export 'src/web/routes/route_google_sign_in.dart';

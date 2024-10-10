@@ -41,6 +41,7 @@ class DatabaseConnection {
       'SELECT 1;',
       timeout: const Duration(seconds: 2),
     );
+
     return true;
   }
 

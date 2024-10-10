@@ -19,11 +19,15 @@ class ServerTestToolsGenerator {
 
     _addPackageDirectives(library);
 
+    var hasModules =
+        config.modules.isNotEmpty && config.type != PackageType.module;
+
     library.body.addAll(
       [
         _buildWithServerpodFunction(),
-        _buildPublicTestEndpointsClass(),
-        _buildPrivateTestEndpointsClass(),
+        if (hasModules) _buildModulesClass(),
+        _buildPublicTestEndpointsClass(hasModules),
+        _buildInternalTestEndpointsClass(),
       ],
     );
 
@@ -313,7 +317,7 @@ class ServerTestToolsGenerator {
     ]);
   }
 
-  Class _buildPublicTestEndpointsClass() {
+  Class _buildPublicTestEndpointsClass(bool hasModules) {
     return Class((classBuilder) {
       classBuilder.name = 'TestEndpoints';
 
@@ -330,52 +334,130 @@ class ServerTestToolsGenerator {
           ),
         );
       }
+
+      if (hasModules) {
+        classBuilder.fields.add(Field(
+          (f) => f
+            ..modifier = FieldModifier.final$
+            ..assignment = refer('_Modules').newInstance([]).code
+            ..name = 'modules'
+            ..type = refer('_Modules'),
+        ));
+      }
+      ;
     });
   }
 
-  Class _buildPrivateTestEndpointsClass() {
+  Class _buildModulesClass() {
+    return Class((c) => c
+      ..name = '_Modules'
+      ..fields.addAll([
+        for (var module in config.modules)
+          Field((f) => f
+            ..late = true
+            ..modifier = FieldModifier.final$
+            ..name = module.nickname
+            ..type = refer('TestEndpoints', module.dartImportUrl(true))),
+      ]));
+  }
+
+  Class _buildInternalTestEndpointsClass() {
     return Class((classBuilder) {
       classBuilder
-        ..name = '_InternalTestEndpoints'
+        ..name = _getInternalTestEndpointsClassName()
         ..extend = refer('TestEndpoints')
         ..implements.add(refer('InternalTestEndpoints', serverpodTestUrl))
-        ..methods.add(Method(
-          (methodBuilder) {
+        ..methods.addAll([
+          Method(
+            (methodBuilder) {
+              methodBuilder
+                ..name = 'initialize'
+                ..annotations.add(refer('override'))
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'serializationManager'
+                      ..type =
+                          refer('SerializationManager', serverpodUrl(true)),
+                  ),
+                )
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'endpoints'
+                      ..type = refer('EndpointDispatch', serverpodUrl(true)),
+                  ),
+                )
+                ..body = Block.of(
+                  [
+                    for (var endpoint in protocolDefinition.endpoints)
+                      refer(endpoint.name)
+                          .assign(
+                            refer('_${endpoint.className}').newInstance(
+                              [
+                                refer('endpoints'),
+                                refer('serializationManager'),
+                              ],
+                            ),
+                          )
+                          .statement,
+                  ],
+                );
+            },
+          ),
+          Method((methodBuilder) {
+            var recordType = RecordType((b) => b
+              ..symbol = 'TestEndpointPair'
+              ..positionalFieldTypes.addAll([
+                refer('SerializationManagerServer', serverpodUrl(true)).type,
+                refer('EndpointDispatch', serverpodUrl(true)).type,
+              ])).type;
+            var mapType = TypeReference(
+              (b) => b
+                ..symbol = 'Map'
+                ..types.add(refer('String').type)
+                ..types.add(recordType.type),
+            );
             methodBuilder
-              ..name = 'initialize'
+              ..name = 'initializeModules'
               ..annotations.add(refer('override'))
-              ..requiredParameters.add(
+              ..requiredParameters.addAll([
                 Parameter(
                   (p) => p
-                    ..name = 'serializationManager'
-                    ..type = refer('SerializationManager', serverpodUrl(true)),
+                    ..name = 'modulesContext'
+                    ..type = mapType,
                 ),
-              )
-              ..requiredParameters.add(
-                Parameter(
-                  (p) => p
-                    ..name = 'endpoints'
-                    ..type = refer('EndpointDispatch', serverpodUrl(true)),
-                ),
-              )
+              ])
               ..body = Block.of(
                 [
-                  for (var endpoint in protocolDefinition.endpoints)
-                    refer(endpoint.name)
-                        .assign(
-                          refer('_${endpoint.className}').newInstance(
-                            [
-                              refer('endpoints'),
-                              refer('serializationManager'),
-                            ],
-                          ),
-                        )
-                        .statement,
+                  for (var module in config.modules)
+                    refer('modules')
+                        .property(module.nickname)
+                        .assign(refer('InternalTestEndpoints',
+                                module.dartImportUrl(true))
+                            .newInstance([]))
+                        .cascade('initialize')
+                        .call([
+                      refer('modulesContext')
+                          .index(literalString(module.nickname))
+                          .nullChecked
+                          .property('\$1'),
+                      refer('modulesContext')
+                          .index(literalString(module.nickname))
+                          .nullChecked
+                          .property('\$2'),
+                    ]).statement,
                 ],
               );
-          },
-        ));
+          }),
+        ]);
     });
+  }
+
+  String _getInternalTestEndpointsClassName() {
+    return config.type == PackageType.module
+        ? 'InternalTestEndpoints'
+        : '_InternalTestEndpoints';
   }
 
   Method _buildWithServerpodFunction() {
@@ -412,16 +494,28 @@ class ServerTestToolsGenerator {
           ],
         ])
         ..body = refer(
-                'buildWithServerpod<_InternalTestEndpoints>', serverpodTestUrl)
+                'buildWithServerpod<${_getInternalTestEndpointsClassName()}>',
+                serverpodTestUrl)
             .call(
           [
             refer('testGroupName'),
             refer('TestServerpod', serverpodTestUrl).newInstance(
               [],
               {
-                'testEndpoints':
-                    refer('_InternalTestEndpoints').newInstance([]),
-                'endpoints': refer('Endpoints').newInstance([]),
+                'serverEndpoints':
+                    refer('TestEndpointPair', serverpodTestUrl).newInstance([
+                  refer('Endpoints').newInstance([]),
+                  refer(_getInternalTestEndpointsClassName()).newInstance([])
+                ]),
+                'moduleEndpoints': literalList(config.modules.map((module) =>
+                    refer('TestModuleEndpointPair', serverpodTestUrl)
+                        .newInstance([
+                      refer('Endpoints', module.dartImportUrl(true))
+                          .newInstance([]),
+                      refer('InternalTestEndpoints', module.dartImportUrl(true))
+                          .newInstance([]),
+                      literalString(module.nickname),
+                    ]))),
                 'serializationManager': refer('Protocol').newInstance([]),
                 'runMode': refer('runMode'),
                 'applyMigrations':

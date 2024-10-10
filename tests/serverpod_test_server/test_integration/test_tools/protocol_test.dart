@@ -156,4 +156,18 @@ void main() {
       expect(result, 'NamedArg');
     });
   }, runMode: ServerpodRunMode.production);
+
+  withServerpod('Given serverpod_test_module when calling method in module',
+      (sessionBuilder, endpoints) {
+    test(
+        'then ModuleEndpoint.hello should be callable under `module` namespace and return greeting',
+        () async {
+      final result =
+          await endpoints.modules.module.module.hello(sessionBuilder, 'Alice');
+
+      expect(result, 'Hello Alice');
+    });
+  }, runMode: ServerpodRunMode.production);
+
+  //client.modules.auth.admin
 }

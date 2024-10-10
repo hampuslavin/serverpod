@@ -2,6 +2,7 @@ import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
@@ -821,6 +822,51 @@ void main() {
       'then the method body contains a call to the correct endpoint method.',
       () {
         expect(testToolsFile, contains('getMethodStreamCallContext('));
+      },
+      skip: testToolsFile == null,
+    );
+  });
+
+  group('Given a protocol definition when config has modules', () {
+    var config = GeneratorConfigBuilder().withName(projectName).withModules([
+      ModuleConfig(
+          type: PackageType.module,
+          name: 'TestModule',
+          nickname: 'testModule',
+          migrationVersions: [],
+          serverPackageDirectoryPathParts: [])
+    ]).withEnabledExperimentalFeatures(
+      [
+        ExperimentalFeature.testTools,
+      ],
+    ).withRelativeServerTestToolsPathParts(
+      [
+        'integration_test',
+        'test_tools',
+      ],
+    ).build();
+
+    var protocolDefinition = const ProtocolDefinition(
+      endpoints: [],
+      models: [],
+    );
+
+    const generator = DartServerCodeGenerator();
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file contains a `_Modules` definition.',
+      () {
+        expect(testToolsFile, contains('class _Modules {'));
       },
       skip: testToolsFile == null,
     );

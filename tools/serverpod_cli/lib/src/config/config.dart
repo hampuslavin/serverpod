@@ -161,6 +161,11 @@ class GeneratorConfig {
         ..._defaultRelativeServerTestToolsPathParts
       ];
     }
+    var isModule = type == PackageType.module;
+
+    if (isModule) {
+      return generatedServeModelPathParts;
+    }
 
     return null;
   }

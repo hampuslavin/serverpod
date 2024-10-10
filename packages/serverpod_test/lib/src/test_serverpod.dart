@@ -11,6 +11,11 @@ abstract interface class InternalTestEndpoints {
     SerializationManagerServer serializationManager,
     EndpointDispatch endpoints,
   );
+
+  /// Initializes the endpoints of a module.
+  void initializeModules(
+    Map<String, (SerializationManagerServer, EndpointDispatch)> modules,
+  );
 }
 
 /// A serverpod session used internally by the test tools.
@@ -80,6 +85,36 @@ List<String> _getServerpodStartUpArgs(String? runMode, bool? applyMigrations) =>
       if (applyMigrations ?? true) '--apply-migrations',
     ];
 
+/// A pair of an endpoint dispatch and the test endpoints that are exposed to the user.
+class TestEndpointPair<T> {
+  /// The endpoint dispatch that is used to dispatch the endpoints.
+  final EndpointDispatch endpointDispatch;
+
+  /// The test endpoints that are exposed to the user.
+  final T testEndpoints;
+
+  /// Module name
+
+  /// Creates a new [TestEndpointPair].
+  TestEndpointPair(
+    this.endpointDispatch,
+    this.testEndpoints,
+  );
+}
+
+/// A pair of an endpoint dispatch and the test endpoints that are exposed to the user.
+class TestModuleEndpointPair<T> extends TestEndpointPair<T> {
+  /// The module name
+  final String moduleName;
+
+  /// Creates a new [TestModuleEndpointPair].
+  TestModuleEndpointPair(
+    super.endpointDispatch,
+    super.testEndpoints,
+    this.moduleName,
+  );
+}
+
 /// A facade for the real Serverpod instance.
 class TestServerpod<T extends InternalTestEndpoints> {
   /// The test endpoints that are exposed to the user.
@@ -93,21 +128,34 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Creates a new test serverpod instance.
   TestServerpod({
     bool? applyMigrations,
-    required EndpointDispatch endpoints,
+    required TestEndpointPair serverEndpoints,
+    required List<TestModuleEndpointPair> moduleEndpoints,
     required SerializationManagerServer serializationManager,
     required this.isDatabaseEnabled,
-    required this.testEndpoints,
     String? runMode,
-  }) : _serverpod = Serverpod(
+  })  : _serverpod = Serverpod(
           _getServerpodStartUpArgs(
             runMode,
             applyMigrations,
           ),
           serializationManager,
-          endpoints,
-        ) {
-    endpoints.initializeEndpoints(_serverpod.server);
-    testEndpoints.initialize(serializationManager, endpoints);
+          serverEndpoints.endpointDispatch,
+        ),
+        testEndpoints = serverEndpoints.testEndpoints {
+    serverEndpoints.endpointDispatch.initializeEndpoints(_serverpod.server);
+    testEndpoints.initialize(
+        serializationManager, serverEndpoints.endpointDispatch);
+
+    testEndpoints.initializeModules(moduleEndpoints
+        .fold<Map<String, (SerializationManagerServer, EndpointDispatch)>>({},
+            (previousValue, element) {
+      element.endpointDispatch.initializeEndpoints(_serverpod.server);
+
+      return {
+        ...previousValue,
+        element.moduleName: (serializationManager, element.endpointDispatch),
+      };
+    }));
   }
 
   /// Starts the underlying serverpod instance.
