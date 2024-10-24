@@ -1,7 +1,9 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/generator/shared.dart';
 
 class BuildScaffoldEndpointClass {
   final bool serverCode;
@@ -12,7 +14,7 @@ class BuildScaffoldEndpointClass {
     required this.config,
   });
 
-  Library generateTestHelper(ClassDefinition classDefinition) {
+  Library generateScaffolds(ClassDefinition classDefinition) {
     var library = LibraryBuilder();
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
@@ -46,20 +48,160 @@ class BuildScaffoldEndpointClass {
         ..name = '${className}Endpoint'
         ..fields.addAll([])
         ..methods.addAll([
-          for (var field in fields)
-            _buildScaffoldEndpointMethod(
-              className,
-              field,
-              classDefinition,
-            ),
+          _buildScaffoldEndpointMethodCreate(
+            className,
+            classDefinition,
+          ),
+          _buildScaffoldEndpointMethodRead(
+            className,
+            classDefinition,
+          ),
+          _buildScaffoldEndpointMethodUpdate(
+            className,
+            classDefinition,
+          ),
+          _buildScaffoldEndpointMethodDelete(
+            className,
+            classDefinition,
+          ),
         ]);
     });
   }
 
-  _buildScaffoldEndpointMethod(
-      String className,
-      SerializableModelFieldDefinition field,
-      ClassDefinition classDefinition) {}
+  Method _buildScaffoldEndpointMethodCreate(
+    String className,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((builder) {
+      builder
+        ..name = 'create'
+        ..modifier = MethodModifier.async
+        ..requiredParameters.addAll([
+          Parameter((b) => b
+            ..name = 'session'
+            ..type = refer('Session', serverpodUrl(true))),
+          Parameter(
+            (b) => b
+              ..name = className.camelCase
+              ..type = refer(className),
+          ),
+        ])
+        ..returns = refer('Future<$className>')
+        ..body = Block.of([
+          refer(className)
+              .property('db')
+              .property('insertRow')
+              .call([refer('session'), refer(className.camelCase)])
+              .returned
+              .statement,
+        ]);
+    });
+  }
+
+  Method _buildScaffoldEndpointMethodRead(
+    String className,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((builder) {
+      builder
+        ..name = 'read'
+        ..modifier = MethodModifier.async
+        ..requiredParameters.addAll([
+          Parameter((b) => b
+            ..name = 'session'
+            ..type = refer('Session', serverpodUrl(true))),
+          Parameter(
+            (b) => b
+              ..name = '${className.camelCase}Id'
+              ..type = refer('int'),
+          ),
+        ])
+        ..returns = refer('Future<$className?>')
+        ..body = Block.of([
+          refer(className)
+              .property('db')
+              .property('findById')
+              .call([refer('session'), refer('${className.camelCase}Id')])
+              .returned
+              .statement,
+        ]);
+    });
+  }
+
+  Method _buildScaffoldEndpointMethodUpdate(
+    String className,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((builder) {
+      builder
+        ..name = 'update'
+        ..modifier = MethodModifier.async
+        ..requiredParameters.addAll([
+          Parameter((b) => b
+            ..name = 'session'
+            ..type = refer('Session', serverpodUrl(true))),
+          Parameter(
+            (b) => b
+              ..name = className.camelCase
+              ..type = refer(className),
+          ),
+        ])
+        ..returns = refer('Future<$className>')
+        ..body = Block.of([
+          refer(className)
+              .property('db')
+              .property('updateRow')
+              .call([refer('session'), refer(className.camelCase)])
+              .returned
+              .statement,
+        ]);
+    });
+  }
+
+  Method _buildScaffoldEndpointMethodDelete(
+    String className,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((builder) {
+      builder
+        ..name = 'delete'
+        ..modifier = MethodModifier.async
+        ..requiredParameters.addAll([
+          Parameter((b) => b
+            ..name = 'session'
+            ..type = refer('Session', serverpodUrl(true))),
+          Parameter(
+            (b) => b
+              ..name = '${className.camelCase}Id'
+              ..type = refer('int'),
+          ),
+        ])
+        ..returns = refer('Future<$className?>')
+        ..body = Block.of([
+          refer(className)
+              .property('db')
+              .property('deleteWhere')
+              .call([
+                refer('session')
+              ], {
+                'where': Method(
+                  (b) => b
+                    ..requiredParameters.add(Parameter((p) => p..name = 't'))
+                    ..body = refer('t.id')
+                        .property('equals')
+                        .call([refer('${className.camelCase}Id')])
+                        .returned
+                        .statement,
+                ).closure,
+              })
+              .awaited
+              .parenthesized
+              .property('first')
+              .returned
+              .statement,
+        ]);
+    });
+  }
 
   void _addPackageDirectives(LibraryBuilder library) {
     var protocolPackageImportPath = 'package:${config.name}_server/${p.joinAll([
@@ -75,7 +217,5 @@ class BuildScaffoldEndpointClass {
       Directive.import(protocolPackageImportPath),
       Directive.import(endpointsPath),
     ]);
-
-    library.ignoreForFile.add('no_leading_underscores_for_local_identifiers');
   }
 }

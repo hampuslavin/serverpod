@@ -4,6 +4,8 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -33,6 +35,20 @@ class ScaffoldCommand extends ServerpodCommand {
       log.error('An error occurred while parsing the server config file: $e');
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
+
+    config = GeneratorConfig(
+        name: config.name,
+        type: config.type,
+        serverPackage: config.serverPackage,
+        dartClientPackage: config.dartClientPackage,
+        dartClientDependsOnServiceClient:
+            config.dartClientDependsOnServiceClient,
+        serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
+        modules: config.modules,
+        extraClasses: config.extraClasses,
+        enabledFeatures: [ServerpodFeature.database],
+        relativeDartClientPackagePathParts: [],
+        experimentalFeatures: [ExperimentalFeature.all]);
 
     // Validate cli version is compatible with serverpod packages
     var warnings = performServerpodPackagesAndCliVersionCheck(

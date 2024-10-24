@@ -1,6 +1,11 @@
+import 'dart:io';
+
+import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/generator/dart/server_scaffold_code_generator.dart';
+import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -39,7 +44,24 @@ abstract final class Scaffolder {
     //   print('Selected: ${option.label}');
     // }
 
-    var chosenModels = models.take(1);
+    var chosenModels = models.take(1).whereType<ClassDefinition>().toList();
+
+    var codeMap = const DartServerScaffoldCodeGenerator()
+        .generateEndpoints(config: config, models: chosenModels);
+
+    for (var file in codeMap.entries) {
+      try {
+        log.debug('Generating ${file.key}.');
+        var out = File(file.key);
+        await out.create(recursive: true);
+        await out.writeAsString(file.value, flush: true);
+
+        collector.addGeneratedFile(out);
+      } catch (e, stackTrace) {
+        log.error('Failed to generate ${file.key}');
+        printInternalError(e, stackTrace);
+      }
+    }
 
     log.debug('Generating endpoint for serializable models.');
 
