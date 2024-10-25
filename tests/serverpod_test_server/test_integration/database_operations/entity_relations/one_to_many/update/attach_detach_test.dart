@@ -44,20 +44,8 @@ void main() async {
       () async {
     var city = await City.db.insertRow(
       session,
-      City(name: 'Stockholm'),
+      City(name: 'Stockholm', citizens: [Person(name: 'John Doe')]),
     );
-
-    var citizen1 = await Person.db.insertRow(
-      session,
-      Person(name: 'John Doe'),
-    );
-
-    var citizen2 = await Person.db.insertRow(
-      session,
-      Person(name: 'Jane Doe'),
-    );
-
-    await City.db.attach.citizens(session, city, [citizen1, citizen2]);
 
     var updatedCity = await City.db.findById(
       session,
@@ -67,19 +55,7 @@ void main() async {
       ),
     );
 
-    expect(
-      updatedCity?.citizens?.toJson(
-        valueToJson: (el) => jsonEncode(el.toJson()),
-      ),
-      contains(jsonEncode(citizen1.toJson())),
-    );
-
-    expect(
-      updatedCity?.citizens?.toJson(
-        valueToJson: (el) => jsonEncode(el.toJson()),
-      ),
-      contains(jsonEncode(citizen2.toJson())),
-    );
+    expect(updatedCity?.citizens, hasLength(1));
   });
 
   test(

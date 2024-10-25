@@ -5,6 +5,8 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generator/shared.dart';
 
+// TODO: Recursively create/include/update/delete relational properties
+
 class BuildScaffoldEndpointClass {
   final bool serverCode;
   final GeneratorConfig config;
@@ -16,9 +18,6 @@ class BuildScaffoldEndpointClass {
 
   Library generateScaffolds(ClassDefinition classDefinition) {
     var library = LibraryBuilder();
-    String? tableName = classDefinition.tableName;
-    var className = classDefinition.className;
-    var fields = classDefinition.fieldsIncludingInherited;
 
     _addPackageDirectives(library);
 
@@ -40,9 +39,15 @@ class BuildScaffoldEndpointClass {
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    var relationFields = fields.where((field) =>
-        field.relation is ObjectRelationDefinition ||
-        field.relation is ListRelationDefinition);
+    String? tableName = classDefinition.tableName;
+    var className = classDefinition.className;
+    var fields = classDefinition.fieldsIncludingInherited;
+
+    var relationFields = fields
+        .where((field) =>
+            field.relation is ObjectRelationDefinition ||
+            field.relation is ListRelationDefinition)
+        .toList();
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}Endpoint'
@@ -51,18 +56,22 @@ class BuildScaffoldEndpointClass {
           _buildScaffoldEndpointMethodCreate(
             className,
             classDefinition,
+            relationFields,
           ),
           _buildScaffoldEndpointMethodRead(
             className,
             classDefinition,
+            relationFields,
           ),
           _buildScaffoldEndpointMethodUpdate(
             className,
             classDefinition,
+            relationFields,
           ),
           _buildScaffoldEndpointMethodDelete(
             className,
             classDefinition,
+            relationFields,
           ),
         ]);
     });
@@ -71,8 +80,10 @@ class BuildScaffoldEndpointClass {
   Method _buildScaffoldEndpointMethodCreate(
     String className,
     ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> relationFields,
   ) {
     return Method((builder) {
+      var createdObject = refer('var created${className}');
       builder
         ..name = 'create'
         ..modifier = MethodModifier.async
@@ -88,12 +99,39 @@ class BuildScaffoldEndpointClass {
         ])
         ..returns = refer('Future<$className>')
         ..body = Block.of([
-          refer(className)
-              .property('db')
-              .property('insertRow')
-              .call([refer('session'), refer(className.camelCase)])
-              .returned
+          createdObject
+              .assign(
+                refer(className).property('db').property('insertRow').call(
+                    [refer('session'), refer(className.camelCase)]).awaited,
+              )
               .statement,
+          ...relationFields.map(
+            (field) {
+              var fieldMember = refer(className.camelCase).property(field.name);
+              var body = Block.of([
+                refer('var local${field.name.pascalCase}')
+                    .assign(fieldMember)
+                    .statement,
+                Code('if(local${field.name.pascalCase} != null) {'),
+                if (field.relation is ObjectRelationDefinition)
+                  refer('var created${field.name.pascalCase}')
+                      .assign(
+                        refer(field.type.className)
+                            .property('db')
+                            .property('insertRow')
+                            .call([
+                          refer('session'),
+                          refer('local${field.name.pascalCase}'),
+                        ]).awaited,
+                      )
+                      .statement,
+                const Code('}'),
+              ]);
+
+              return body;
+            },
+          ),
+          refer(className.camelCase).returned.statement,
         ]);
     });
   }
@@ -101,6 +139,7 @@ class BuildScaffoldEndpointClass {
   Method _buildScaffoldEndpointMethodRead(
     String className,
     ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> relationFields,
   ) {
     return Method((builder) {
       builder
@@ -131,6 +170,7 @@ class BuildScaffoldEndpointClass {
   Method _buildScaffoldEndpointMethodUpdate(
     String className,
     ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> relationFields,
   ) {
     return Method((builder) {
       builder
@@ -161,6 +201,7 @@ class BuildScaffoldEndpointClass {
   Method _buildScaffoldEndpointMethodDelete(
     String className,
     ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> relationFields,
   ) {
     return Method((builder) {
       builder

@@ -44,7 +44,10 @@ abstract final class Scaffolder {
     //   print('Selected: ${option.label}');
     // }
 
-    var chosenModels = models.take(1).whereType<ClassDefinition>().toList();
+    var chosenModels = models
+        .where((m) => m.className == 'Team')
+        .whereType<ClassDefinition>()
+        .toList();
 
     var codeMap = const DartServerScaffoldCodeGenerator()
         .generateEndpoints(config: config, models: chosenModels);
